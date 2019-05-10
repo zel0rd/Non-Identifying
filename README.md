@@ -5,7 +5,7 @@
 In a terminal, do following command in where you want to create git repository.
 For example, in /home/User/repo, do:
 ```
-git clone git@github.com:seonghapark/counterUAV.git
+git clone git@github.com:dd-nonidentifying/Non-Identifying.git
 ```
 Then a folder named counterUAV will be created. After that, create your own branch and upload your works. 
 Master branch is a basically provided git repository where we will not use for this project. 
