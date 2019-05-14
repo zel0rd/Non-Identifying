@@ -24,8 +24,8 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../Documents/brotherinvest/이미지/kshield.jpg</normaloff>
-    <normalon>../../Documents/brotherinvest/이미지/kshield.jpg</normalon>../../Documents/brotherinvest/이미지/kshield.jpg</iconset>
+    <normaloff>../../../../../Documents/brotherinvest/이미지/kshield.jpg</normaloff>
+    <normalon>../../../../../Documents/brotherinvest/이미지/kshield.jpg</normalon>../../../../../Documents/brotherinvest/이미지/kshield.jpg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -240,7 +240,7 @@
              </size>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="DTtab">
              <property name="sizePolicy">
@@ -551,7 +551,7 @@
          <rect>
           <x>0</x>
           <y>10</y>
-          <width>561</width>
+          <width>531</width>
           <height>371</height>
          </rect>
         </property>
@@ -690,13 +690,13 @@
          </item>
         </layout>
        </widget>
-       <widget class="QGroupBox" name="OUTPUTbox">
+       <widget class="QGroupBox" name="OUTPUTDATAbox">
         <property name="geometry">
          <rect>
-          <x>550</x>
-          <y>30</y>
-          <width>501</width>
-          <height>351</height>
+          <x>540</x>
+          <y>10</y>
+          <width>531</width>
+          <height>371</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -710,7 +710,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
          <item row="0" column="0">
-          <widget class="QTableWidget" name="INPUTtable_2">
+          <widget class="QTableWidget" name="OUTPUTDATAtable_">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -834,6 +834,52 @@
          </item>
         </layout>
        </widget>
+       <widget class="QGroupBox" name="inputGraphBox">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>380</y>
+          <width>531</width>
+          <height>291</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Input graph</string>
+        </property>
+        <widget class="matplotlibWidget" name="inputGraph" native="true">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>511</width>
+           <height>251</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="outputGraphBox">
+        <property name="geometry">
+         <rect>
+          <x>540</x>
+          <y>380</y>
+          <width>531</width>
+          <height>291</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Output graph</string>
+        </property>
+        <widget class="matplotlibWidget" name="outputGraph" native="true">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>511</width>
+           <height>251</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -846,7 +892,7 @@
      <x>0</x>
      <y>0</y>
      <width>1077</width>
-     <height>26</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">
@@ -905,7 +951,20 @@
     <string>DeIdentifier</string>
    </property>
   </action>
+  <action name="actionnew_project">
+   <property name="text">
+    <string>new project</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>matplotlibWidget</class>
+   <extends>QWidget</extends>
+   <header>matplotlibwidgetFile</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
