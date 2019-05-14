@@ -846,11 +846,11 @@
         <property name="title">
          <string>Input graph</string>
         </property>
-        <widget class="matplotlibWidget" name="inputGraph" native="true">
+        <widget class="MplWidget" name="inputGraph" native="true">
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>30</y>
+           <y>20</y>
            <width>511</width>
            <height>251</height>
           </rect>
@@ -869,11 +869,11 @@
         <property name="title">
          <string>Output graph</string>
         </property>
-        <widget class="matplotlibWidget" name="outputGraph" native="true">
+        <widget class="MplWidget" name="outputGraph" native="true">
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>30</y>
+           <y>20</y>
            <width>511</width>
            <height>251</height>
           </rect>
@@ -892,7 +892,7 @@
      <x>0</x>
      <y>0</y>
      <width>1077</width>
-     <height>31</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">
@@ -959,9 +959,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>matplotlibWidget</class>
+   <class>MplWidget</class>
    <extends>QWidget</extends>
-   <header>matplotlibwidgetFile</header>
+   <header location="global">mplwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
