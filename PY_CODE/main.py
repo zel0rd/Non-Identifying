@@ -277,9 +277,9 @@ class ImportDataWindow(QMainWindow):
             item = MyQTableWidgetItemCheckBox()
             self.ui.dataTypeChange.setItem(i, 0, item)
             chbox = MyCheckBox(item)
+            chbox.setChecked(True)
             # print(chbox.sizeHint())
             self.ui.dataTypeChange.setCellWidget(i, 0, chbox)
-
             chbox.stateChanged.connect(self.__checkbox_change)  # sender() 확인용 예..
 
         self.ui.dataTypeChange.setColumnWidth(0, 30) # checkbox 컬럼 폭 강제 조절. 
@@ -335,7 +335,7 @@ class ImportDataWindow(QMainWindow):
         # print("hedder2.. ", idx)
         self.table.setSortingEnabled(True)  # 정렬기능 on
         # time.sleep(0.2)
-        self.table.setSortingEnabled(False)  # 정렬기능 off
+        #self.table.setSortingEnabled(False)  # 정렬기능 off
 ###      
     
         
@@ -346,7 +346,7 @@ class MyCheckBox(QCheckBox):
         """ 
         super().__init__() 
         self.item = item 
-        self.mycheckvalue = 0 # 0 --> unchecked, 2 --> checked 
+        self.mycheckvalue = 2 # 0 --> unchecked, 2 --> checked 
         self.stateChanged.connect(self.__checkbox_change) 
         self.stateChanged.connect(self.item.my_setdata) # checked 여부로 정렬을 하기위한 data 저장 
         
