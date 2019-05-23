@@ -23,14 +23,11 @@ from datetime import datetime
 import sys 
 sys.path.append("C:\\Users\\jh\\Desktop\\python\\UI") # insert your path
 import mplwidget
-sys.path.append("C:\\Users\\jh\\Desktop\\python\\PY_CODE") # insert your path
-import PY_CODE.modify
 
 #to shuffle data
 from random import shuffle
+
 global tab1_input # inputtable data in tab1
-global abc
-abc = 3
 global tab2_input
 #global print_line
 global tab2_output
@@ -47,13 +44,12 @@ class MainWidget(QMainWindow):
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: change dynamic text
         self.ui.show()        
 
-        #self.ui.actionimport_data.triggered.connect(self.ImportFileDialog) #import_data in menuBar, call read data from file
         self.ui.INPUTtable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
-        self.ui.actionimport_data.triggered.connect(self.ImportData)
+        self.ui.actionimport_data.triggered.connect(self.ImportData) #importData from csv
         self.ui.actionsave_data.triggered.connect(self.SaveFileDialog) #export_data in menuBar, call save data event
         self.ui.actionEXIT.triggered.connect(self.CloseWindow) #exit in menuBar, call exit event
 
-        self.ui.actionRun.triggered.connect(self.Missing) # randomly mix data, Jihye edit.
+        self.ui.actionRun.triggered.connect(self.Missing) # not complete 수정중
         
     
     def initUI(self):
@@ -66,7 +62,7 @@ class MainWidget(QMainWindow):
         self.newWindow = ImportDataWindow(self)
 
 #Jihye' code multiline start, 데이터타입별로 처리하기, 
-    #결측치 처리하기, https://rfriend.tistory.com/262
+    #결측치 처리하기, https://rfriend.tistory.com/262 수정필요
     def Missing(self): 
         #1. null 레코드 추출
         global tab1_input
@@ -79,7 +75,7 @@ class MainWidget(QMainWindow):
         print(tab1_input)
         
 
-    #4분위수 처리, 현재 평균 -> 다른값으로도 바꿀 수 있게 하기
+    #4분위수 처리, 현재 평균 -> 다른값으로도 바꿀 수 있게 하기 수정필요
     def Outlier(self):
         global tab1_input
         rownum = len(tab1_input.index) # get row count
@@ -110,7 +106,7 @@ class MainWidget(QMainWindow):
             #self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(ShuffleData[i]))
             self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(str(tab1_input[tab1_input.columns[SelectColumn]][i])))
 
-    #데이터 비식별확기법
+    #데이터 비식별확기법 수정필요
     def Swap():
         print("a")
 
@@ -181,22 +177,8 @@ class MainWidget(QMainWindow):
         for i in range(rownum): #rendering values again
             #self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(ShuffleData[i]))
             self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(str(tab1_input[tab1_input.columns[SelectColumn]][i])))
-            
 
-        """
-        if(df[y].dtype == np.float64 or df[y].dtype == np.int64):
-            df[y] = round(df[y],2) # change number
-            print(df)
-        """
-
-    def GetDataFromTable(self, List, SelectColumn, RowCount):
-        self.List = List # list to save values of specific column 
-        for i in range(RowCount):
-            self.List.append(str(self.ui.INPUTtable.item(i, SelectColumn).text()))
-        return List
-
-
-    #K-Anonimiyu
+    #K-Anonimiyu 수정필요
     def K_anonymity(self):
         list = ['sex', 'age', 'loc']
         df = tab1_input.groupby(list).size().reset_index(name='count')
@@ -204,13 +186,13 @@ class MainWidget(QMainWindow):
         del df['count']
         print(df)
 
-    def L_diversity(self):
+    def L_diversity(self): #수정필요
         list = ['sex']
         df = tab1_input.groupby(list).size().reset_index(name='count')
         df = df.loc[df['count']>1] #change parameter
         print(df)
 
-    def T_closeness(self):
+    def T_closeness(self): #수정필요
         print("A")
 #Jihye' code multiline finish
         
@@ -225,14 +207,6 @@ class MainWidget(QMainWindow):
             print(tab1_input)
             output.to_csv(fileName, encoding='ms949', index=False)  
 
-        """
-        nowDatetime =  datetime.now().strftime('%Y-%m-%d %H-%M-%S')    
-        if(fileName == ""):
-            output.to_csv("result_%s.csv" % nowDatetime, encoding='ms949')    
-        else:
-            output.to_csv(fileName, encoding='ms949')
-        """  
-            
     def CloseWindow(self, event):
         close = QtWidgets.QMessageBox.question(self,
                                      "QUIT",
@@ -284,23 +258,21 @@ class ImportDataWindow(QMainWindow):
 
         inputdata = tab1_input
         columns = len(inputdata.columns)
+        columnsName = inputdata.columns
+        print(columnsName)
         #열 인덱싱        
         inputType = inputdata.dtypes
 
-        for i in range(columns):
+        for i in range(len(inputdata.columns)):
             self.ui.dataTypeChange.setItem(i,0,QTableWidgetItem(str(inputdata.columns[i])))
-            self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str(inputType[[i]])))
-        for i in inputdata.columns:
-            print(inputdata[i])
-            if(inputdata[i].dtype == np.int64):
-                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("int")))
-            elif(inputdata[i].dtype == np.float64):
-                self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str("int")))
+            print(inputdata[columnsName[i]])
+            if(inputdata[columnsName[i]].dtype == np.int64):
+                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("Integer")))
+            elif(inputdata[columnsName[i]].dtype == np.datetime64[ns]):
+                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("date/time")))
             else:
-                self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str("int")))
-
-           
-#        
+                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("String")))
+                
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
