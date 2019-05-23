@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import csv
 import sys
-import pandas as pd
+import time
 import numpy as np
+import pandas as pd
+import pandas.api.types as ptypes
 from pandas import Series, DataFrame
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
 from PyQt5 import QtWidgets
-import numpy
-import pandas.api.types as ptypes
 
 
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 
-import time
 from datetime import datetime
 
 #to import UI path
-import sys 
 sys.path.append("./../UI") # insert your path
 import mplwidget
 
@@ -234,6 +233,8 @@ class ImportDataWindow(QMainWindow):
                                                   options=options)
         if fileName:
             inputdata = pd.read_csv(fileName, sep=",",encoding='euc-kr') #read file
+            path = os.getcwd() + fileName
+            self.ui.filePath.append(path)
             print(inputdata)
 
             #self.ui.InputPath.showMessage(fileName) #show file path
