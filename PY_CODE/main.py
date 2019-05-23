@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import csv
 import sys
-import pandas as pd
+import time
 import numpy as np
+import pandas as pd
+import pandas.api.types as ptypes
 from pandas import Series, DataFrame
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
 from PyQt5 import QtWidgets
-import numpy
-import pandas.api.types as ptypes
 
 
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 
-import time
 from datetime import datetime
 
 #to import UI path
-import sys 
 sys.path.append("./../UI") # insert your path
 import mplwidget
 
@@ -248,6 +247,8 @@ class ImportDataWindow(QMainWindow):
                                                   options=options)
         if fileName:
             inputdata = pd.read_csv(fileName, sep=",",encoding='euc-kr') #read file
+            path = os.getcwd() + fileName
+            self.ui.filePath.append(path)
             print(inputdata)
 
             #self.ui.InputPath.showMessage(fileName) #show file path
@@ -292,9 +293,9 @@ class ModifyData(QMainWindow):
             item = MyQTableWidgetItemCheckBox()
             self.ui.dataTypeChange.setItem(i, 0, item)
             chbox = MyCheckBox(item)
+            chbox.setChecked(True)
             # print(chbox.sizeHint())
             self.ui.dataTypeChange.setCellWidget(i, 0, chbox)
-
             chbox.stateChanged.connect(self.__checkbox_change)  # sender() 확인용 예..
 
         self.ui.dataTypeChange.setColumnWidth(0, 30) # checkbox 컬럼 폭 강제 조절. 
@@ -353,7 +354,7 @@ class ModifyData(QMainWindow):
         # print("hedder2.. ", idx)
         self.table.setSortingEnabled(True)  # 정렬기능 on
         # time.sleep(0.2)
-        self.table.setSortingEnabled(False)  # 정렬기능 off
+        #self.table.setSortingEnabled(False)  # 정렬기능 off
 ###      
     
         
@@ -364,7 +365,7 @@ class MyCheckBox(QCheckBox):
         """ 
         super().__init__() 
         self.item = item 
-        self.mycheckvalue = 0 # 0 --> unchecked, 2 --> checked 
+        self.mycheckvalue = 2 # 0 --> unchecked, 2 --> checked 
         self.stateChanged.connect(self.__checkbox_change) 
         self.stateChanged.connect(self.item.my_setdata) # checked 여부로 정렬을 하기위한 data 저장 
         
