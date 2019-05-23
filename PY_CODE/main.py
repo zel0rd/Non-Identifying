@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 import numpy as np
 from pandas import Series, DataFrame
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
@@ -255,24 +256,124 @@ class ImportDataWindow(QMainWindow):
     def ModifyData(self):
         self.ui = uic.loadUi("./../UI/ModifyData.ui") #insert your UI path
         self.ui.show()
+        
+        global tab1_input
+        
+        HorizontalHeader = ["DA","NAME","SAMPLE","EXPECTED","FORMAT"]
+        
+        self.ui.dataTypeChange.setColumnCount(len(HorizontalHeader))
+        self.ui.dataTypeChange.setHorizontalHeaderLabels(HorizontalHeader)
+        self.ui.dataTypeChange.setRowCount(len(tab1_input.columns))
 
-        inputdata = tab1_input
-        columns = len(inputdata.columns)
-        columnsName = inputdata.columns
-        print(columnsName)
-        #열 인덱싱        
-        inputType = inputdata.dtypes
+        print(tab1_input.columns)
+        print(len(tab1_input.columns))
+        
+        
+        item = MyQTableWidgetItemCheckBox()
+   
+        #checkbox
+        for i in range(len(tab1_input.columns)):
+            item = MyQTableWidgetItemCheckBox()
+            self.ui.dataTypeChange.setItem(i, 0, item)
+            chbox = MyCheckBox(item)
+            # print(chbox.sizeHint())
+            self.ui.dataTypeChange.setCellWidget(i, 0, chbox)
 
-        for i in range(len(inputdata.columns)):
-            self.ui.dataTypeChange.setItem(i,0,QTableWidgetItem(str(inputdata.columns[i])))
-            print(inputdata[columnsName[i]])
-            if(inputdata[columnsName[i]].dtype == np.int64):
-                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("Integer")))
-            elif(inputdata[columnsName[i]].dtype == np.datetime64[ns]):
-                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("date/time")))
-            else:
-                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("String")))
-                
+            chbox.stateChanged.connect(self.__checkbox_change)  # sender() 확인용 예..
+
+        self.ui.dataTypeChange.setColumnWidth(0, 30) # checkbox 컬럼 폭 강제 조절. 
+        self.ui.dataTypeChange.cellClicked.connect(self._cellclicked)
+
+        #columns name
+        for i in range(len(tab1_input.columns)):
+            self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str(tab1_input.columns[i])))
+
+
+        #type_list = ["same","int","string"]
+        type_list = []
+        
+        for i in range(len(tab1_input.columns)):
+#            print(tab1_input[tab1_input.columns[i]][2])
+            temp1 = tab1_input[tab1_input.columns[i]][2]
+            self.ui.dataTypeChange.setItem(i,2, QTableWidgetItem(str(temp1)))
+#            print(type(tab1_input[tab1_input.columns[i]][2]))
+            temp2 = str(type(tab1_input[tab1_input.columns[i]][2]))
+            self.ui.dataTypeChange.setItem(i,3, QTableWidgetItem(str(temp2)))
+            type_list.append(str(type(tab1_input[tab1_input.columns[i]][2])))
+            
+        type_list = list(set(type_list))
+        type_list = ["SAME"] + type_list
+        
+         #combo box
+        for i in range(len(tab1_input.columns)):
+            mycom = QComboBox() 
+            mycom.addItems(type_list) 
+            #mycom.addItem("") 
+            self.ui.dataTypeChange.setCellWidget(i, 4, mycom)
+        
+        self.ui.dataTypeChange.resizeColumnsToContents() 
+        self.ui.dataTypeChange.resizeRowsToContents() 
+        
+        
+###
+    def __checkbox_change(self, checkvalue):
+        # print("check change... ", checkvalue)
+        chbox = self.sender()  # signal을 보낸 MyCheckBox instance
+        print("checkbox sender row = ", chbox.get_row())
+
+    def _cellclicked(self, row, col):
+        print("_cellclicked... ", row, col)
+
+    def _horizontal_header_clicked(self, idx):
+        """
+        컬럼 헤더 click 시에만, 정렬하고, 다시 정렬기능 off 시킴
+         -- 정렬기능 on 시켜놓으면, 값 바뀌면 바로 자동으로 data 순서 정렬되어 바뀌어 헷갈린다..
+        :param idx -->  horizontalheader index; 0, 1, 2,...
+        :return:
+        """
+        # print("hedder2.. ", idx)
+        self.table.setSortingEnabled(True)  # 정렬기능 on
+        # time.sleep(0.2)
+        self.table.setSortingEnabled(False)  # 정렬기능 off
+###      
+    
+        
+class MyCheckBox(QCheckBox): 
+    def __init__(self, item): 
+        """ 
+        :param item: QTableWidgetItem instance 
+        """ 
+        super().__init__() 
+        self.item = item 
+        self.mycheckvalue = 0 # 0 --> unchecked, 2 --> checked 
+        self.stateChanged.connect(self.__checkbox_change) 
+        self.stateChanged.connect(self.item.my_setdata) # checked 여부로 정렬을 하기위한 data 저장 
+        
+    def __checkbox_change(self, checkvalue): 
+        # print("myclass...check change... ", checkvalue) 
+        self.mycheckvalue = checkvalue 
+        print("checkbox row= ", self.get_row()) 
+        
+    def get_row(self): 
+        return self.item.row()
+    
+class MyQTableWidgetItemCheckBox(QTableWidgetItem): 
+    """ checkbox widget 과 같은 cell 에 item 으로 들어감. checkbox 값 변화에 따라, 사용자정의 data를 기준으로 정렬 기능 구현함. """ 
+    def __init__(self): 
+        super().__init__() 
+        self.setData(Qt.UserRole, 0) 
+        
+    def __lt__(self, other): 
+        # print(type(self.data(Qt.UserRole))) 
+        return self.data(Qt.UserRole) < other.data(Qt.UserRole) 
+    
+    def my_setdata(self, value): 
+        # print("my setdata ", value) 
+        self.setData(Qt.UserRole, value) 
+        # print("row ", self.row())
+
+    
+    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
