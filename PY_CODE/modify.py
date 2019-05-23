@@ -18,7 +18,7 @@ from datetime import datetime
 
 #to import UI path
 import sys 
-sys.path.append("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI") # insert your path
+sys.path.append("./../UI") # insert your path
 
 import mplwidget
 
@@ -33,7 +33,7 @@ fileName = ""
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
         super(ImportDataWindow, self).__init__(parent)
-        self.ui = uic.loadUi("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI\\ImportData.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/ImportData.ui") #insert your UI path
         self.ui.show()
         self.ui.toolButton.clicked.connect(self.ImportDataButton)
         self.ui.cancelButton.clicked.connect(qApp.quit)  #try to close the window(failed!!!!!!!)
@@ -65,7 +65,7 @@ class ImportDataWindow(QMainWindow):
         self.ui.nextButton.clicked.connect(self.ModifyData)
 
     def ModifyData(self):
-        self.ui = uic.loadUi("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI\\ModifyData.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/ModifyData.ui") #insert your UI path
         self.ui.show()
 
         inputdata = tab1_input

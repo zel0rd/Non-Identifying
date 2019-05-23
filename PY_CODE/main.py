@@ -40,7 +40,7 @@ class MainWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.ui = uic.loadUi("C:\\Users\\jh\\Desktop\\python\\UI\\NonIdentifierUI.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: change dynamic text
         self.ui.show()        
 
@@ -219,7 +219,7 @@ class MainWidget(QMainWindow):
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
         super(ImportDataWindow, self).__init__(parent)
-        self.ui = uic.loadUi("C:\\Users\\jh\\Desktop\\python\\UI\\ImportData.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/ImportData.ui") #insert your UI path
         self.ui.show()
         self.ui.toolButton.clicked.connect(self.ImportDataButton)
         #self.ui.cancelButton.clicked.connect(qApp.quit)  #try to close the window(failed!!!!!!!)
@@ -253,7 +253,7 @@ class ImportDataWindow(QMainWindow):
         self.ui.nextButton.clicked.connect(self.ModifyData)
 
     def ModifyData(self):
-        self.ui = uic.loadUi("C:\\Users\\jh\\Desktop\\python\\UI\\ModifyData.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/ModifyData.ui") #insert your UI path
         self.ui.show()
 
         inputdata = tab1_input
