@@ -21,7 +21,7 @@ from datetime import datetime
 
 #to import UI path
 import sys 
-sys.path.append("C:\\Users\\jh\\Desktop\\python\\UI") # insert your path
+sys.path.append("./../UI") # insert your path
 import mplwidget
 
 #to shuffle data
