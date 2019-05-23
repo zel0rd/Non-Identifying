@@ -4,12 +4,15 @@
 import csv
 import sys
 import pandas as pd
+import numpy as np
 from pandas import Series, DataFrame
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5 import uic
 from PyQt5 import QtWidgets
 import numpy
+import pandas.api.types as ptypes
+
 
 from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as NavigationToolbar)
 
@@ -18,11 +21,16 @@ from datetime import datetime
 
 #to import UI path
 import sys 
-sys.path.append("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI") # insert your path
-
+sys.path.append("C:\\Users\\jh\\Desktop\\python\\UI") # insert your path
 import mplwidget
+sys.path.append("C:\\Users\\jh\\Desktop\\python\\PY_CODE") # insert your path
+import PY_CODE.modify
 
+#to shuffle data
+from random import shuffle
 global tab1_input # inputtable data in tab1
+global abc
+abc = 3
 global tab2_input
 #global print_line
 global tab2_output
@@ -30,19 +38,22 @@ global tab2_output
 
 fileName = ""
 
-class MatplotlibWidget(QMainWindow):
+class MainWidget(QMainWindow):
     
     def __init__(self):
         super().__init__()
         
-        self.ui = uic.loadUi("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI\\NonIdentifierUI.ui") #insert your UI path
+        self.ui = uic.loadUi("C:\\Users\\jh\\Desktop\\python\\UI\\NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: change dynamic text
         self.ui.show()        
 
         #self.ui.actionimport_data.triggered.connect(self.ImportFileDialog) #import_data in menuBar, call read data from file
+        self.ui.INPUTtable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.ui.actionimport_data.triggered.connect(self.ImportData)
         self.ui.actionsave_data.triggered.connect(self.SaveFileDialog) #export_data in menuBar, call save data event
         self.ui.actionEXIT.triggered.connect(self.CloseWindow) #exit in menuBar, call exit event
+
+        self.ui.actionRun.triggered.connect(self.Missing) # randomly mix data, Jihye edit.
         
     
     def initUI(self):
@@ -54,34 +65,155 @@ class MatplotlibWidget(QMainWindow):
     def ImportData(self):
         self.newWindow = ImportDataWindow(self)
 
-    """
-    def ImportFileDialog(self):     #Get Directory and File -> Load datas
-        options = QFileDialog.Options()
-      #  options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "",
-                                                  "All Files (*);;Python Files (*.py);; CSV Files(*.csv);; Excel Files(*.xlsx)", 
-                                                  options=options)
-        if fileName:
-            print('input file name is ' + fileName) #show filename -> console
-            inputdata = pd.read_csv(fileName, sep=",",encoding='euc-kr') #read file
+#Jihye' code multiline start, 데이터타입별로 처리하기, 
+    #결측치 처리하기, https://rfriend.tistory.com/262
+    def Missing(self): 
+        #1. null 레코드 추출
+        global tab1_input
+        temp = tab1_input[tab1_input.isnull().any(axis=1) ==True]
+        print("\n\n\n\this is null values\n\n\n\n")
+        print(temp)
+        
+        #tab1_input = tab1_input.fillna(tab1_input.mean()) #평균으로 처리
+        tab1_input = tab1_input.where(pd.notnull(tab1_input), tab1_input.mean(), axis='columns') #평균으로 처리
+        print(tab1_input)
+        
 
-            global tab1_input #need to define again 
-            tab1_input = inputdata #save data in file, 파일에 있는 데이터를 변수에 저장 
-            print(tab1_input) #saved data print-> console
+    #4분위수 처리, 현재 평균 -> 다른값으로도 바꿀 수 있게 하기
+    def Outlier(self):
+        global tab1_input
+        rownum = len(tab1_input.index) # get row count
+        SelectColumn = self.ui.INPUTtable.currentColumn() #get Selected Column number
+        SelectColumnName = self.ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
 
-            rownum = len(inputdata.index) # get row count
-            colnum = len(inputdata.columns) # get column count
-            self.ui.INPUTtable.setColumnCount(colnum) #Set Column Count    
-            self.ui.INPUTtable.setHorizontalHeaderLabels(list(inputdata.columns))
+        OutlierData = tab1_input[SelectColumnName].to_frame()
+        pd.to_numeric(OutlierData[SelectColumnName]) #TODO: you need to edit this line
+        print(OutlierData.dtypes) # check data type
+        
+        #reference: https://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-data-frame/31502974#31502974
+        q1 = OutlierData[SelectColumnName].quantile(0.25) #calculate q1
+        q3 = OutlierData[SelectColumnName].quantile(0.75) #calculate q3
+        iqr = q3-q1 #Interquartile range
+        fence_low  = q1-1.5*iqr 
+        fence_high = q3+1.5*iqr
 
-            for i in range(colnum):
-                for j in range(rownum): #rendering data (inputtable of Tab1)
-                    self.ui.INPUTtable.setItem(j,i,QTableWidgetItem(str(inputdata[inputdata.columns[i]][j])))
+        #change 4분위수
+        Outliered = OutlierData.loc[(OutlierData[SelectColumnName] >= fence_low) & (OutlierData[SelectColumnName] <= fence_high)] #select not outlier data
+        OutlierData.loc[(OutlierData[SelectColumnName] < fence_low) | (OutlierData[SelectColumnName] > fence_high)] = Outliered[SelectColumnName].mean()
+
+        #이상치 제거
+        #OutlierData = OutlierData.loc[(OutlierData[SelectColumnName] > fence_low) & (OutlierData[SelectColumnName] < fence_high)] #select not outlier data
+        
+        tab1_input[SelectColumnName] = OutlierData[SelectColumnName]#change values
+
+        for i in range(rownum): #rendering values again
+            #self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(ShuffleData[i]))
+            self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(str(tab1_input[tab1_input.columns[SelectColumn]][i])))
+
+    #데이터 비식별확기법
+    def Swap():
+        print("a")
+
+    def Aggregation(self): #미완성함수, 수정매우많이필요
+        global tab1_input
+        rownum = len(tab1_input.index) # get row count
+        SelectColumn = self.ui.INPUTtable.currentColumn() #get Selected Column number
+        SelectColumnName = self.ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
+
+        OutlierData = tab1_input[SelectColumnName].to_frame()
+        pd.to_numeric(OutlierData[SelectColumnName]) #TODO: you need to edit this line
+        print(OutlierData.dtypes) # check data type
+
+        #group by
+        # df['column_name'].str.extract('(\d+)').astype(int) # 숫자만 추출하고 데이터 형태 변환
+
+    def Micro_aggregatio():
+        print("A")
+
+    def Shuffle(self):
+        global tab1_input
+        rownum = len(tab1_input.index) # get row count
+        #rownum = self.ui.IPUTtable.rowCount()
+        SelectColumn = self.ui.INPUTtable.currentColumn()
+        SelectColumnName = self.ui.INPUTtable.horizontalHeaderItem(SelectColumn).text()
+        print("SelectedIndex is " + str(SelectColumn))
+        print("SelectColumnName is ", str(SelectColumnName))
+        
+        #ShuffleData = self.GetDataFromTable(ShuffleData, SelectColumn, SelectRows) #get datas from selected column
+        
+        ShuffleData = tab1_input[SelectColumnName].tolist() #pull one column and convert list
+        print(ShuffleData) # check shuffed data
+
+        for i in range(3): #TODO: you need to modify this line (get argument from user) 
+    	    shuffle(ShuffleData)
+
+        tab1_input[SelectColumnName] = ShuffleData #change values
+        
+        for i in range(rownum): #rendering values again
+            #self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(ShuffleData[i]))
+            self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(str(tab1_input[tab1_input.columns[SelectColumn]][i])))
+        
+    def Rounding(self):
+        global tab1_input
+        rownum = len(tab1_input.index) # get row count
+        SelectColumn = self.ui.INPUTtable.currentColumn() #get Selected Column number
+        SelectColumnName = self.ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
+
+        DataFromTable = tab1_input[SelectColumnName].to_frame()
+        pd.to_numeric(DataFromTable[SelectColumnName]) #TODO: you need to edit this line
+        print(DataFromTable.dtypes) # check data type
+
+        #5를 기준으로 up down
+        if(DataFromTable[SelectColumnName].dtype == np.float64):
+            DataFromTable[SelectColumnName] = round(DataFromTable[SelectColumnName],1) # change number 4down, 5up
+            #DataFromTable[SelectColumnName] = DataFromTable[SelectColumnName].apply(np.ceil) # up
+            #DataFromTable[SelectColumnName] = DataFromTable[SelectColumnName].apply(np.floor) # down
+        elif(DataFromTable[SelectColumnName].dtype == np.int64):
+            for i in range(rownum):
+                DataFromTable.loc[i, SelectColumnName] = ((DataFromTable.loc[i, SelectColumnName]+5)//10)*10 # change number, 4down, 5up
+            #for i in range(10):
+            #    DataFromTable.loc[i, SelectColumnName] = (DataFromTable.loc[i, SelectColumnName]//10)*10 # change number, down
+            #for i in range(10):
+            #    DataFromTable.loc[i, SelectColumnName] = ((DataFromTable.loc[i, SelectColumnName]+9)//10)*10 # change number, up
+
+        tab1_input[SelectColumnName] = DataFromTable #change values
+
+        for i in range(rownum): #rendering values again
+            #self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(ShuffleData[i]))
+            self.ui.INPUTtable.setItem(i,SelectColumn, QTableWidgetItem(str(tab1_input[tab1_input.columns[SelectColumn]][i])))
             
-            self.ui.statusbar.showMessage(fileName + ', columns: ' + str(colnum) + ', rows: ' + str(rownum)) #statusbar show(file path)
-    """
+
+        """
+        if(df[y].dtype == np.float64 or df[y].dtype == np.int64):
+            df[y] = round(df[y],2) # change number
+            print(df)
+        """
+
+    def GetDataFromTable(self, List, SelectColumn, RowCount):
+        self.List = List # list to save values of specific column 
+        for i in range(RowCount):
+            self.List.append(str(self.ui.INPUTtable.item(i, SelectColumn).text()))
+        return List
 
 
+    #K-Anonimiyu
+    def K_anonymity(self):
+        list = ['sex', 'age', 'loc']
+        df = tab1_input.groupby(list).size().reset_index(name='count')
+        df = df.loc[df['count']>1] #change parameter
+        del df['count']
+        print(df)
+
+    def L_diversity(self):
+        list = ['sex']
+        df = tab1_input.groupby(list).size().reset_index(name='count')
+        df = df.loc[df['count']>1] #change parameter
+        print(df)
+
+    def T_closeness(self):
+        print("A")
+#Jihye' code multiline finish
+        
     def SaveFileDialog(self): #tab2_output convert to csv file and save
         options = QFileDialog.Options()
         fileName, _ = QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "",
@@ -109,10 +241,11 @@ class MatplotlibWidget(QMainWindow):
         if close == QtWidgets.QMessageBox.Yes:
             event.accept()
        
+
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
         super(ImportDataWindow, self).__init__(parent)
-        self.ui = uic.loadUi("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI\\ImportData.ui") #insert your UI path
+        self.ui = uic.loadUi("C:\\Users\\jh\\Desktop\\python\\UI\\ImportData.ui") #insert your UI path
         self.ui.show()
         self.ui.toolButton.clicked.connect(self.ImportDataButton)
         #self.ui.cancelButton.clicked.connect(qApp.quit)  #try to close the window(failed!!!!!!!)
@@ -146,13 +279,30 @@ class ImportDataWindow(QMainWindow):
         self.ui.nextButton.clicked.connect(self.ModifyData)
 
     def ModifyData(self):
-        self.ui = uic.loadUi("C:\\Users\\san\\Desktop\\D_D\\python_UI\\Non-Identifying\\UI\\ModifyData.ui") #insert your UI path
+        self.ui = uic.loadUi("C:\\Users\\jh\\Desktop\\python\\UI\\ModifyData.ui") #insert your UI path
         self.ui.show()
+
+        inputdata = tab1_input
+        columns = len(inputdata.columns)
+        #열 인덱싱        
+        inputType = inputdata.dtypes
+
+        for i in range(columns):
+            self.ui.dataTypeChange.setItem(i,0,QTableWidgetItem(str(inputdata.columns[i])))
+            self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str(inputType[[i]])))
+        for i in inputdata.columns:
+            print(inputdata[i])
+            if(inputdata[i].dtype == np.int64):
+                self.ui.dataTypeChange.setItem(i,1, QTableWidgetItem(str("int")))
+            elif(inputdata[i].dtype == np.float64):
+                self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str("int")))
+            else:
+                self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str("int")))
 
            
 #        
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = MatplotlibWidget()
+    ex = MainWidget()
     sys.exit(app.exec_())
