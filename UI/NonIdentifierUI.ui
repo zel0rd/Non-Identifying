@@ -24,8 +24,8 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../../../../../Documents/brotherinvest/이미지/kshield.jpg</normaloff>
-    <normalon>../../../../../../../Documents/brotherinvest/이미지/kshield.jpg</normalon>../../../../../../../Documents/brotherinvest/이미지/kshield.jpg</iconset>
+    <normaloff>../../../../../Documents/brotherinvest/이미지/kshield.jpg</normaloff>
+    <normalon>../../../../../Documents/brotherinvest/이미지/kshield.jpg</normalon>../../../../../Documents/brotherinvest/이미지/kshield.jpg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -240,7 +240,7 @@
              </size>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="DTtab">
              <property name="sizePolicy">
@@ -374,31 +374,39 @@
              </attribute>
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="0" column="0">
-               <widget class="QTableWidget" name="DYPEtable">
+               <widget class="QTableWidget" name="typeTable">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="rowCount">
+                 <number>10</number>
+                </property>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
                 <column>
                  <property name="text">
-                  <string>분류</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Attribute</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>Data type</string>
+                  <string>Column Name</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
                   <string>Format</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>ID</string>
                  </property>
                 </column>
                </widget>
@@ -877,8 +885,7 @@
    <addaction name="actionimport_data"/>
    <addaction name="actionsave_data"/>
    <addaction name="actionRun"/>
-   <addaction name="actionStop"/>
-   <addaction name="actionDeIdentifier"/>
+   <addaction name="actionNonIdentifier"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -886,7 +893,7 @@
      <x>0</x>
      <y>0</y>
      <width>924</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">
@@ -924,9 +931,9 @@
     <string>Stop</string>
    </property>
   </action>
-  <action name="actionDeIdentifier">
+  <action name="actionNonIdentifier">
    <property name="text">
-    <string>DeIdentifier</string>
+    <string>Non-Identifier</string>
    </property>
   </action>
   <action name="actionnew_project">
