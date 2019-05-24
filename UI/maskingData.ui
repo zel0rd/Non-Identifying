@@ -14,100 +14,43 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QGroupBox" name="arrBox">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>160</y>
+      <y>130</y>
       <width>761</width>
-      <height>341</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="title">
-     <string>Input data</string>
+     <string>arrangment</string>
     </property>
-    <widget class="QTableWidget" name="dataTypeChange">
+    <widget class="QRadioButton" name="arrLeft">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>31</y>
-       <width>741</width>
-       <height>301</height>
+       <x>20</x>
+       <y>40</y>
+       <width>331</width>
+       <height>29</height>
       </rect>
      </property>
-     <property name="rowCount">
-      <number>15</number>
+     <property name="text">
+      <string>Arrangement items to the left</string>
      </property>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <row/>
-     <column>
-      <property name="text">
-       <string>1</string>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>2</string>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>3</string>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>4</string>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>5</string>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </column>
+    </widget>
+    <widget class="QRadioButton" name="arrRight">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>80</y>
+       <width>361</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Arrangement items to the right</string>
+     </property>
     </widget>
    </widget>
    <widget class="Line" name="line">
@@ -230,8 +173,98 @@
      </font>
     </property>
     <property name="text">
-     <string>Modify data type</string>
+     <string>Data Masking</string>
     </property>
+   </widget>
+   <widget class="QGroupBox" name="maskingBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>761</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Masking</string>
+    </property>
+    <widget class="QRadioButton" name="maskRight">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>331</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Mask characters left to right</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="maskLeft">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>80</y>
+       <width>361</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Mask characters right to left</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="charBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>390</y>
+      <width>761</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Characters</string>
+    </property>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>181</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Masking character</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>40</y>
+       <width>251</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>(*)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>(0)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>( )</string>
+      </property>
+     </item>
+    </widget>
    </widget>
   </widget>
  </widget>
