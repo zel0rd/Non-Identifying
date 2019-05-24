@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>924</width>
-    <height>828</height>
+    <height>964</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -293,17 +293,17 @@
                   <property name="bottomMargin">
                    <number>5</number>
                   </property>
+                  <item row="0" column="0">
+                   <widget class="QRadioButton" name="ID">
+                    <property name="text">
+                     <string>식별자</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="3">
                    <widget class="QRadioButton" name="GI">
                     <property name="text">
                      <string>일반정보</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QRadioButton" name="SA">
-                    <property name="text">
-                     <string>민감정보</string>
                     </property>
                    </widget>
                   </item>
@@ -314,10 +314,10 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="0">
-                   <widget class="QRadioButton" name="ID">
+                  <item row="0" column="2">
+                   <widget class="QRadioButton" name="SA">
                     <property name="text">
-                     <string>식별자</string>
+                     <string>민감정보</string>
                     </property>
                    </widget>
                   </item>
@@ -331,24 +331,8 @@
                   </sizepolicy>
                  </property>
                  <property name="rowCount">
-                  <number>10</number>
+                  <number>0</number>
                  </property>
-                 <property name="columnCount">
-                  <number>3</number>
-                 </property>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <row/>
-                 <column/>
-                 <column/>
-                 <column/>
                 </widget>
                </widget>
               </item>
@@ -366,7 +350,7 @@
              </attribute>
              <layout class="QGridLayout" name="gridLayout_4">
               <item row="0" column="0">
-               <widget class="QTableWidget" name="typeTable">
+               <widget class="QTableWidget" name="DYPEtable">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -374,8 +358,13 @@
                  </sizepolicy>
                 </property>
                 <property name="rowCount">
-                 <number>5</number>
+                 <number>10</number>
                 </property>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
+                <row/>
                 <row/>
                 <row/>
                 <row/>
@@ -388,12 +377,12 @@
                 </column>
                 <column>
                  <property name="text">
-                  <string>Data type</string>
+                  <string>ID</string>
                  </property>
                 </column>
                 <column>
                  <property name="text">
-                  <string>ID</string>
+                  <string>분류</string>
                  </property>
                 </column>
                </widget>
@@ -872,7 +861,7 @@
    <addaction name="actionimport_data"/>
    <addaction name="actionsave_data"/>
    <addaction name="actionRun"/>
-   <addaction name="actionNonIdentifier"/>
+   <addaction name="actionDeIdentifier"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -918,7 +907,7 @@
     <string>Stop</string>
    </property>
   </action>
-  <action name="actionNonIdentifier">
+  <action name="actionDeIdentifier">
    <property name="text">
     <string>Non-Identifier</string>
    </property>
