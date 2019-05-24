@@ -59,6 +59,7 @@ class MainWidget(QMainWindow):
         
         
     def ImportData(self):
+        self.ui.hide()
         self.newWindow = ImportDataWindow(self)
 
 #Jihye' code multiline start, 데이터타입별로 처리하기, 
@@ -260,7 +261,7 @@ class ImportDataWindow(QMainWindow):
         
         global tab1_input
         
-        HorizontalHeader = ["DA","NAME","SAMPLE","EXPECTED","FORMAT"]
+        HorizontalHeader = ["DA","NAME","SAMPLE","EXPECTED","FORMAT","식별자"]
         
         self.ui.dataTypeChange.setColumnCount(len(HorizontalHeader))
         self.ui.dataTypeChange.setHorizontalHeaderLabels(HorizontalHeader)
@@ -277,13 +278,15 @@ class ImportDataWindow(QMainWindow):
             item = MyQTableWidgetItemCheckBox()
             self.ui.dataTypeChange.setItem(i, 0, item)
             chbox = MyCheckBox(item)
-            chbox.setChecked(True)
+#            chbox.setChecked(True)
             # print(chbox.sizeHint())
             self.ui.dataTypeChange.setCellWidget(i, 0, chbox)
             chbox.stateChanged.connect(self.__checkbox_change)  # sender() 확인용 예..
+    
 
         self.ui.dataTypeChange.setColumnWidth(0, 30) # checkbox 컬럼 폭 강제 조절. 
         self.ui.dataTypeChange.cellClicked.connect(self._cellclicked)
+        
 
         #columns name
         for i in range(len(tab1_input.columns)):
@@ -312,11 +315,96 @@ class ImportDataWindow(QMainWindow):
             #mycom.addItem("") 
             self.ui.dataTypeChange.setCellWidget(i, 4, mycom)
         
+        id_list = ["식별자","준식별자","민감정보","일반정보"]
+        
+       #식별자
+        for i in range(len(tab1_input.columns)):
+            mycom = QComboBox() 
+            mycom.addItems(id_list) 
+                #mycom.addItem("") 
+            self.ui.dataTypeChange.setCellWidget(i, 5, mycom)
+        
+        
+        
         self.ui.dataTypeChange.resizeColumnsToContents() 
         self.ui.dataTypeChange.resizeRowsToContents() 
         
         
-###
+        
+        
+#        self.ui.backButton.clicked.connect(self.Modify_hide)
+        self.ui.finishButton.clicked.connect(self.finish)
+        
+#    def Modify_hide(self):
+#        time.sleep(1)
+#        print("close")
+#        self.ui.hide()
+#        time.sleep(3)
+#        print("open")
+#        self.ImportDataWindow()
+#        
+    def finish(self):
+        
+        #checked columns
+        checked_number = []
+        for i in range(len(tab1_input.columns)):
+            chbox = self.ui.dataTypeChange.cellWidget(i,0)
+            if isinstance(chbox, MyCheckBox):
+                if chbox.isChecked():
+#                    print("It is checked : " + str(i))
+                    checked_number.append(i)
+                else:
+                    time.sleep(1)
+#                    print("It is not : " + str(i))
+            else:
+                time.sleep(1)
+#                print("It is not checkbox : " + str(i))
+        print(checked_number)
+        
+        check_columns = []
+        for j in checked_number:
+            aa = self.ui.dataTypeChange.item(j,1).text()
+            check_columns.append(aa)
+        print(check_columns)
+        
+        #checked columns의 식별자
+        id_dict = {}
+        id_dict['식별자'] = []
+        id_dict['준식별자'] = []
+        id_dict['민감정보'] = []
+        id_dict['일반정보'] = []
+        for i in checked_number:
+            mycom = self.ui.dataTypeChange.cellWidget(i,5)
+            print(mycom.currentText())
+            if mycom.currentText() == '식별자':
+                id_dict['식별자'].append(self.ui.dataTypeChange.item(i,1).text())
+            elif mycom.currentText() == '준식별자':
+                id_dict['준식별자'].append(self.ui.dataTypeChange.item(i,1).text())
+            elif mycom.currentText() == '민감정보':
+                id_dict['민감정보'].append(self.ui.dataTypeChange.item(i,1).text())
+            else:
+                id_dict['일반정보'].append(self.ui.dataTypeChange.item(i,1).text())
+        print(id_dict)
+        
+        
+
+        self.ui.hide()  
+
+        self.ui = uic.loadUi("./../UI/NonIdentifierUI.ui") #insert your UI path
+        self.ui.show()
+        
+        
+        rownum = len(tab1_input.index) # get row count
+        self.ui.INPUTtable.setColumnCount(len(check_columns))
+        self.ui.INPUTtable.setHorizontalHeaderLabels(check_columns)
+
+        for k in range(len(check_columns)):
+            for l in range(rownum):
+                self.ui.INPUTtable.setItem(l,k,QTableWidgetItem(str(tab1_input[check_columns[k]][l])))
+                
+        self.ui.INPUTtable.resizeColumnsToContents() 
+        self.ui.INPUTtable.resizeRowsToContents() 
+        
     def __checkbox_change(self, checkvalue):
         # print("check change... ", checkvalue)
         chbox = self.sender()  # signal을 보낸 MyCheckBox instance
@@ -324,20 +412,6 @@ class ImportDataWindow(QMainWindow):
 
     def _cellclicked(self, row, col):
         print("_cellclicked... ", row, col)
-
-    def _horizontal_header_clicked(self, idx):
-        """
-        컬럼 헤더 click 시에만, 정렬하고, 다시 정렬기능 off 시킴
-         -- 정렬기능 on 시켜놓으면, 값 바뀌면 바로 자동으로 data 순서 정렬되어 바뀌어 헷갈린다..
-        :param idx -->  horizontalheader index; 0, 1, 2,...
-        :return:
-        """
-        # print("hedder2.. ", idx)
-        self.table.setSortingEnabled(True)  # 정렬기능 on
-        # time.sleep(0.2)
-        #self.table.setSortingEnabled(False)  # 정렬기능 off
-###      
-    
         
 class MyCheckBox(QCheckBox): 
     def __init__(self, item): 
