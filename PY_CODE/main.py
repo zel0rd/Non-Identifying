@@ -39,7 +39,6 @@ class MainWidget(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        
         self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: change dynamic text
         self.ui.show()        
@@ -51,7 +50,7 @@ class MainWidget(QMainWindow):
         self.ui.actionEXIT.triggered.connect(self.CloseWindow) #exit in menuBar, call exit event
 
         #self.ui.actionRun.triggered.connect(self.Missing) # not complete 수정중
-        #self.ui.actionNonIdentifier.triggered.connect(self.NonIdentifierMethod) # not complete 수정중
+        self.ui.actionNonIdentifier.triggered.connect(self.NonIdentifierMethod) # not complete 수정중
 
 
     def ImportFileDialog(self):     #Get Directory and File -> Load datas
@@ -240,7 +239,7 @@ class ImportDataWindow(QMainWindow):
 
 class ModifyData(QMainWindow):
     def __init__(self, parent=None):
-        super(ModifyData,self).__init__(parent)
+        super(ModifyData, self).__init__(parent)
         self.ui = uic.loadUi("./UI/ModifyData.ui") #insert your UI path
         self.ui.show()
         
@@ -270,8 +269,6 @@ class ModifyData(QMainWindow):
         for i in range(len(tab1_input.columns)):
             self.ui.dataTypeChange.setItem(i,1,QTableWidgetItem(str(tab1_input.columns[i]))) 
 
-
-        
         #index 2 and 3
         type_list = []
         for i in range(len(tab1_input.columns)):
@@ -326,45 +323,53 @@ class ModifyData(QMainWindow):
             if isinstance(chbox, MyCheckBox):
                 if chbox.isChecked():
                     checked_number.append(i)
-                    checkedColumn = self.ui.dataTypeChange.item(i,1).text()
-                    check_columns.append(checkedColumn)
-                    combo_id.append(str(self.ui.dataTypeChange.cellWidget(i,5).currentText())) #식별자 combo box
+                    check_columns.append(self.ui.dataTypeChange.item(i,1).text())
+                    combo_id.append(self.ui.dataTypeChange.cellWidget(i,5).currentText()) #식별자 combo box
                     if(self.ui.dataTypeChange.cellWidget(i,4).currentText() == 'SAME'):
-                        types.append(self.ui.dataTypeChange.itemAt(i,3).text())
+                        print(self.ui.dataTypeChange.item(i,3).text())
+                        types.append(self.ui.dataTypeChange.item(i,3).text())
                     else:
-                        types.append(str(self.ui.dataTypeChange.cellWidget(i,4).currentText()))
+                        types.append(self.ui.dataTypeChange.cellWidget(i,4).currentText())
                     
 
         print(checked_number) # just 확인용
         print(check_columns) # just 확인용      
-        
 
-        #MainWidget() rendering
-        self.ui.hide()  
+        self.mainUI = MainWidget()
 
-        self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
-        self.ui.show()
-        
+        #self.ui = uic.loadUi("./UI/ModifyData.ui") #insert your UI path
         #tab1의 input table rendering
         rownum = len(tab1_input.index) # get row count
         colnum = len(check_columns)
-        self.ui.INPUTtable.setRowCount(rownum) #set row number
-        self.ui.INPUTtable.setColumnCount(colnum) #set column number
-        self.ui.INPUTtable.setHorizontalHeaderLabels(check_columns)
+        self.mainUI.ui.INPUTtable.setRowCount(rownum) #set row number
+        self.mainUI.ui.INPUTtable.setColumnCount(colnum) #set column number
+        self.mainUI.ui.INPUTtable.setHorizontalHeaderLabels(check_columns)
 
         for k in range(colnum):
             for l in range(rownum):
-                self.ui.INPUTtable.setItem(l,k,QTableWidgetItem(str(tab1_input[check_columns[k]][l])))
+                self.mainUI.ui.INPUTtable.setItem(l,k,QTableWidgetItem(str(tab1_input[check_columns[k]][l])))
                 
-        self.ui.INPUTtable.resizeColumnsToContents() 
-        self.ui.INPUTtable.resizeRowsToContents() 
+        self.mainUI.ui.INPUTtable.resizeColumnsToContents() 
+        self.mainUI.ui.INPUTtable.resizeRowsToContents() 
         
         #tab1의 data type 테이블 rendering
-        self.ui.typeTable.setRowCount(colnum) # 보여줄 컬럼 개수만큼 행 만들기
+        self.mainUI.ui.typeTable.setRowCount(colnum) # 보여줄 컬럼 개수만큼 행 만들기
         for rowindex in range(colnum): #행번호            
-            self.ui.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(check_columns[rowindex]))) #setitem 컬럼이름 
-            self.ui.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
-            self.ui.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(types[rowindex])))
+            self.mainUI.ui.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(check_columns[rowindex]))) #setitem 컬럼이름 
+            self.mainUI.ui.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(types[rowindex]))) #setitem 데이터타입 입력
+            self.mainUI.ui.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
+
+            """ TODO: Radio button 구현하기
+            if(self.ui.typeTable.item(i,2).text() == '식별자'):
+                print("A")
+            elif(self.ui.typeTable.item(i,2).text() == '준식별자'):
+                print("A")
+            elif(self.ui.typeTable.item(i,2).text() == '민감정보'):
+                print("A")
+            elif(self.ui.typeTable.item(i,2).text() == '일반정보'):
+                print("A")                """
+        
+        self.ui.hide()
         
 
         
@@ -410,7 +415,7 @@ class MyQTableWidgetItemCheckBox(QTableWidgetItem):
         self.setData(Qt.UserRole, value) 
     
                 
-#nonidentifierMethod window
+#nonidentifierMethod window, 수정중
 class NonIdentifierMethod(QMainWindow):
     global tab1_input, tab2_output
     global before, after, SelectColumn, SelectColumnName, rownum, colnum
@@ -431,9 +436,9 @@ class NonIdentifierMethod(QMainWindow):
         rownum = len(before.index) # get row count
         colnum = len(before.columns) # get column count
 
-        """if(before[SelectColumnName].dtype == np.int64): # TODO: not int, string
+        if(self.parent().ui.typeTable.item(SelectColumn, 2).text() != 'int64'): #int64만 수치데이터 method 사용
             self.ui.Method5.setCheckable(False)
-            self.ui.Method6.setCheckable(False)"""
+            self.ui.Method6.setCheckable(False)
 
         self.ui.nextButton.clicked.connect(self.NextButton)
         self.ui.cancelButton.clicked.connect(self.ui.hide)
@@ -460,7 +465,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
 
 
-        elif(self.ui.Method5.isChecked()): # 라운딩 UI 및 before data 테이블 값 넣기
+        elif(self.ui.Method6.isChecked()): # 라운딩 UI 및 before data 테이블 값 넣기
             self.ui = uic.loadUi("./UI/Rounding.ui") #insert your UI path
             self.ui.show()
             self.ui.randomLabel.hide()
@@ -485,6 +490,8 @@ class NonIdentifierMethod(QMainWindow):
         number = self.ui.shffleText.toPlainText()
         try:  #숫자만 입력, 그 외 값은 예외처리
             number = int(number)
+            if(number<1):
+                number/0
         except Exception:
             QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
         pass
@@ -509,7 +516,7 @@ class NonIdentifierMethod(QMainWindow):
         number = self.ui.roundText.toPlainText()
         try: #숫자만 입력, 그 외 값은 예외처리
             number = int(number)
-            if(number<=0):
+            if(number<1):
                 print(1 / number)
         except Exception:
             QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number and bigger than 0')
