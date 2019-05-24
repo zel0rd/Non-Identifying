@@ -51,7 +51,7 @@ class MainWidget(QMainWindow):
         self.ui.actionEXIT.triggered.connect(self.CloseWindow) #exit in menuBar, call exit event
 
         #self.ui.actionRun.triggered.connect(self.Missing) # not complete 수정중
-        self.ui.actionNonIdentifier.triggered.connect(self.NonIdentifierMethod) # not complete 수정중
+        #self.ui.actionNonIdentifier.triggered.connect(self.NonIdentifierMethod) # not complete 수정중
 
 
     def ImportFileDialog(self):     #Get Directory and File -> Load datas
