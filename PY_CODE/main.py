@@ -216,6 +216,20 @@ class MainWidget(QMainWindow):
         if close == QtWidgets.QMessageBox.Yes:
             event.accept()
        
+class Manager(QMainWindow):
+    def __init__(self):
+        super(ImportDataWindow, self).__init__(parent)
+        self.ui = uic.loadUi("./../UI/ImportData.ui") #insert your UI path
+        self.ui.show()
+        
+        self.ImportDataWindow = ImportDataWindow()
+        self.ModifyData = ModifyData()
+
+        self.ImportDataWindow.nextButton.clicked.connect(self.ModifyData.show)
+        self.ModifyData.backButton.clicked.connect(self.ImportDataWindow.show)
+
+        self.first.show()
+
 
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -253,9 +267,11 @@ class ImportDataWindow(QMainWindow):
                 for j in range(rownum): #rendering data (inputtable of Tab1)
                     self.ui.InputData.setItem(j,i,QTableWidgetItem(str(inputdata[inputdata.columns[i]][j])))
 
-        self.ui.nextButton.clicked.connect(self.ModifyData)
-
-    def ModifyData(self):
+        self.ui.nextButton.clicked.connect(self.hide)
+        
+class ModifyData(QMainWindow):
+    def __init__(self, parent=None):
+        super(ModifyData,self).__init_(parent)
         self.ui = uic.loadUi("./../UI/ModifyData.ui") #insert your UI path
         self.ui.show()
         
@@ -328,6 +344,9 @@ class ImportDataWindow(QMainWindow):
         
         self.ui.dataTypeChange.resizeColumnsToContents() 
         self.ui.dataTypeChange.resizeRowsToContents() 
+        
+        self.ui.backButton.clicked.connect(self.hide)
+
         
         
         
