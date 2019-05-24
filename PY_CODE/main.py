@@ -286,7 +286,7 @@ class ModifyData(QMainWindow):
             type_list.append(temp2) # 컬럼별로 데이터타입 리스트에 추가
             self.ui.dataTypeChange.setItem(i,3, QTableWidgetItem(str(temp2))) #EXPECTED 컬럼에 데이터 타입 출력
             
-        type_list.append("datetime64[ns]")
+        type_list.append("datetime64[ns]", "string", "int64")
         type_list = list(set(type_list))
         type_list = ["SAME"] + type_list
         
@@ -319,6 +319,8 @@ class ModifyData(QMainWindow):
         #checked columns
         checked_number = [] # checkbox index
         check_columns = []  # 체크된 컬럼들
+        combo_id = []
+        types = []
         for i in range(len(tab1_input.columns)):
             chbox = self.ui.dataTypeChange.cellWidget(i,0) # 0부터 checkbox 값 가져오기
             if isinstance(chbox, MyCheckBox):
@@ -326,6 +328,12 @@ class ModifyData(QMainWindow):
                     checked_number.append(i)
                     checkedColumn = self.ui.dataTypeChange.item(i,1).text()
                     check_columns.append(checkedColumn)
+                    combo_id.append(str(self.ui.dataTypeChange.cellWidget(i,5).currentText())) #식별자 combo box
+                    if(self.ui.dataTypeChange.cellWidget(i,4).currentText() == 'SAME'):
+                        types.append(self.ui.dataTypeChange.itemAt(i,3).text())
+                    else:
+                        types.append(str(self.ui.dataTypeChange.cellWidget(i,4).currentText()))
+                    
 
         print(checked_number) # just 확인용
         print(check_columns) # just 확인용      
@@ -350,14 +358,14 @@ class ModifyData(QMainWindow):
                 
         self.ui.INPUTtable.resizeColumnsToContents() 
         self.ui.INPUTtable.resizeRowsToContents() 
-        """
+        
         #tab1의 data type 테이블 rendering
         self.ui.typeTable.setRowCount(colnum) # 보여줄 컬럼 개수만큼 행 만들기
-        for down in range(colnum): #행번호
-            mycom = self.ui.dataTypeChange.cellWidget(i,5)
-            self.ui.INPUTtable.setItem(down, 0, QTableWidgetItem(str(check_columns[down])))
-            self.ui.INPUTtable.setItem(down, 1, QTableWidgetItem(str(tab1_input[check_columns[k]][l])))
-            self.ui.INPUTtable.setItem(down, 2, QTableWidgetItem(str(tab1_input[check_columns[k]][l])))"""
+        for rowindex in range(colnum): #행번호            
+            self.ui.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(check_columns[rowindex]))) #setitem 컬럼이름 
+            self.ui.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
+            self.ui.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(types[rowindex])))
+        
 
         
     def __checkbox_change(self, checkvalue):
