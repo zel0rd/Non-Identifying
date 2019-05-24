@@ -240,7 +240,7 @@
              </size>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="DTtab">
              <property name="sizePolicy">
@@ -294,52 +294,28 @@
                    <number>5</number>
                   </property>
                   <item row="0" column="0">
-                   <widget class="QCheckBox" name="ID">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                   <widget class="QRadioButton" name="ID">
                     <property name="text">
                      <string>식별자</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
-                   <widget class="QCheckBox" name="QD">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                   <widget class="QRadioButton" name="QD">
                     <property name="text">
                      <string>준식별자</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="2">
-                   <widget class="QCheckBox" name="SA">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                   <widget class="QRadioButton" name="SA">
                     <property name="text">
                      <string>민감정보</string>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="3">
-                   <widget class="QCheckBox" name="GI">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
+                   <widget class="QRadioButton" name="GI">
                     <property name="text">
                      <string>일반정보</string>
                     </property>
