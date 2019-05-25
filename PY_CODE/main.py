@@ -5,6 +5,7 @@ import csv
 import sys
 import time
 import random #to shuffle data and random value
+from random import shuffle
 import numpy as np
 import pandas as pd
 import pandas.api.types as ptypes
@@ -41,10 +42,11 @@ class MainWidget(QMainWindow):
     TODO: 
     1. 메인 윈도우에서 데이터타입 바꾸기 구현 필요,
     2. 식별자 구분이 잘 안되는 수정 필요
-    3. 비식별화 함수 추가 필요: shuffle, rounding 완성 // 마스킹 삭제 교환 통계값 코딩중
+    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값 완성 // 마스킹 삭제 교환  코딩중
      3-1. 결측치 수정중
-     3-2. string or datetime도 이상치 ??
+     3-2. datetime도 이상치 ??
      3-3. datetime??
+     3-4. 통계값: 회귀분석 보류
     4. 프라이버시 모델 구현하기(익명성 다양성은 수정중, 근접성 코딩 필요)
     5. 결측치 처리 구현 중
     6. run 함수 구현 필요: run 누르면 tab2의 결과창 보여주기
@@ -53,6 +55,7 @@ class MainWidget(QMainWindow):
     기타: 
     statusbar에 컬럼 및 행 정보 보여주기  
     SaveFileDialog 함수 수정 필요(tab2의 output 데이터를 파일로 저장하도록, 현재 tab1_input으로 저장)
+    data type: int, string, datetime
     """
     def __init__(self):
         super().__init__()
@@ -88,8 +91,9 @@ class MainWidget(QMainWindow):
 
             global tab1_input #need to define again 
             global tab2_output
-            tab1_input = inputdata #save data in file, 파일에 있는 데이터를 변수에 저장 
-            tab2_output = inputdata
+            tab1_input = inputdata.copy() #save data in file, 파일에 있는 데이터를 변수에 저장 
+            tab2_output = inputdata.copy()
+
 
             rownum = len(inputdata.index) # get row count
             colnum = len(inputdata.columns) # get column count
@@ -176,20 +180,6 @@ class MainWidget(QMainWindow):
     def Swap():
         print("a")
 
-    def Aggregation(self): #미완성함수, 수정매우많이필요
-        global tab1_input
-        rownum = len(tab1_input.index) # get row count
-        SelectColumn = self.ui.INPUTtable.currentColumn() #get Selected Column number
-        SelectColumnName = self.ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
-
-        OutlierData = tab1_input[SelectColumnName].to_frame()
-        pd.to_numeric(OutlierData[SelectColumnName]) #TODO: you need to edit this line
-        print(OutlierData.dtypes) # check data type
-
-        #group by
-        # df['column_name'].str.extract('(\d+)').astype(int) # 숫자만 추출하고 데이터 형태 변환
-
-
     #K-Anonimiyu 수정필요
     def K_anonymity(self):
         list = ['sex', 'age', 'loc']
@@ -250,8 +240,8 @@ class ImportDataWindow(QMainWindow):
             print(inputdata)
 
             global tab1_input, tab2_output #need to define again 
-            tab1_input = inputdata #save data in file, 파일에 있는 데이터를 변수에 저장 
-            tab2_output = inputdata
+            tab1_input = inputdata.copy() #save data in file, 파일에 있는 데이터를 변수에 저장 
+            tab2_output = inputdata.copy()
 
             rownum = len(inputdata.index) # get row count
             colnum = len(inputdata.columns) # get column count
@@ -507,33 +497,34 @@ class NonIdentifierMethod(QMainWindow):
 
             global SelectColumn
             
-            #Rendering before box plot 
-            self.beforefig = plt.Figure()
-            self.canvas = FigureCanvas(self.beforefig) # figure - canvas 연동
-            self.ui.beforePlot.addWidget(self.canvas) #layout에 figure 삽입
-
-            ax = self.beforefig.add_subplot(1, 1, 1)  # fig를 1행 1칸으로 나누어 1칸안에 넣어줍니다
-            ax.boxplot(tab1_input[tab1_input.columns[SelectColumn]])
-            ax.grid()
-            self.canvas.draw() 
-            print(tab1_input[tab1_input.columns[SelectColumn]])
+            #Rendering before box plot start
+            self.beforeFig = plt.Figure()
+            self.beforeCanvas = FigureCanvas(self.beforeFig) # figure - canvas 연동
+            self.ui.beforePlot.addWidget(self.beforeCanvas) #layout에 figure 삽입
             
-            #Rendering after box plot 
-            self.beforefig = plt.Figure()
-            self.canvas = FigureCanvas(self.beforefig) # figure - canvas 연동
-            self.ui.beforePlot.addWidget(self.canvas) #layout에 figure 삽입
+            self.ax1 = self.beforeFig.add_subplot(1, 1, 1)  # fig를 1행 1칸으로 나누어 1칸안에 넣기
+            self.beforeCanvas.draw() 
+            self.beforeGraph(tab1_input[tab1_input.columns[SelectColumn]])
+            #Rendering before box plot end
 
-            ax = self.beforefig.add_subplot(1, 1, 1)  # fig를 1행 1칸으로 나누어 1칸안에 넣어줍니다
-            ax.boxplot(tab1_input[tab1_input.columns[SelectColumn]])
-            ax.grid()
-            self.canvas.draw() 
-            print(tab1_input[tab1_input.columns[SelectColumn]])
- 
+            #Rendering after box plot start
+            self.afterFig = plt.Figure()
+            self.afterCanvas = FigureCanvas(self.afterFig) # figure - canvas 연동
+            self.ui.afterPlot.addWidget(self.afterCanvas) #layout에 figure 삽입
+
+            self.ax2 = self.afterFig.add_subplot(1, 1, 1)  # fig를 1행 1칸으로 나누어 1칸안에 넣기
+            self.afterCanvas.draw() 
+            #Rendering after box plot end
+
+            self.ui.columns.hide()
+            self.ui.group.hide()
+            self.ui.AllPart.currentIndexChanged.connect(self.IndexSetting)
+            self.ui.columns.currentIndexChanged.connect(self.changeGraphCombobox)
+
             self.ui.runButton.clicked.connect(self.Outlier)
-            self.ui.finishButton.clicked.connect(self.finishButton)
+            self.ui.finishButton.clicked.connect(self.finishButton2)
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
-
 
         elif(self.ui.Method6.isChecked()): # 라운딩 UI 및 before data 테이블 값 넣기
             self.ui = uic.loadUi("./UI/Rounding.ui") #insert your UI path
@@ -554,6 +545,7 @@ class NonIdentifierMethod(QMainWindow):
     
     #radio button event end 
 
+
     #data shuffle(재배열) start          
     def Shuffle(self):
         number = self.ui.shffleText.toPlainText()
@@ -565,7 +557,7 @@ class NonIdentifierMethod(QMainWindow):
             QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
         pass
 
-        global before, rownum, colnum, tab2_output, SelectColumn, after
+        global before, after
         after = before[before.columns[0]].values.tolist()
         
         for i in range(number): #shuffle 
@@ -581,7 +573,7 @@ class NonIdentifierMethod(QMainWindow):
 
     #data Rounding start
     def Rounding(self):
-        global before, rownum, colnum, tab2_output, SelectColumn, SelectColumnName, after
+        global before, after
         number = self.ui.roundText.toPlainText()
         try: #숫자만 입력, 그 외 값은 예외처리
             number = int(number)
@@ -592,7 +584,7 @@ class NonIdentifierMethod(QMainWindow):
         pass
       
         index = self.ui.comboBox.currentIndex()
-        after = before[before.columns[0]].to_frame() 
+        after = before.copy()
 
         if(index == 0):# 올림
             self.ui.randomLabel.hide()
@@ -631,42 +623,189 @@ class NonIdentifierMethod(QMainWindow):
     #data Rounding end
 
     #통계값 aggregation start
-    #4분위수 처리, 현재 평균 -> 다른값으로도 바꿀 수 있게 하기 수정필요
     def Outlier(self):
-        global tab1_input, SelectColumn, SelectColumnName
+        global before, after
+        after = before.copy() 
 
-        OutlierData = tab1_input[SelectColumnName].to_frame()
-        print(OutlierData.dtypes) # check data type
-        
         #reference: https://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-data-frame/31502974#31502974
-        q1 = OutlierData[SelectColumnName].quantile(0.25) #calculate q1
-        q3 = OutlierData[SelectColumnName].quantile(0.75) #calculate q3
+        q1 = after[SelectColumnName].quantile(0.25) #calculate q1
+        q3 = after[SelectColumnName].quantile(0.75) #calculate q3
         iqr = q3-q1 #Interquartile range
         fence_low  = q1-1.5*iqr 
         fence_high = q3+1.5*iqr
 
         #change 4분위수
-        Outliered = OutlierData.loc[(OutlierData[SelectColumnName] >= fence_low) & (OutlierData[SelectColumnName] <= fence_high)] #select not outlier data
-        OutlierData.loc[(OutlierData[SelectColumnName] < fence_low) | (OutlierData[SelectColumnName] > fence_high)] = Outliered[SelectColumnName].mean()
-
-        #이상치 제거
-        #OutlierData = OutlierData.loc[(OutlierData[SelectColumnName] > fence_low) & (OutlierData[SelectColumnName] < fence_high)] #select not outlier data
+        index = self.ui.AllPart.currentIndex()
         
-        tab2_output[SelectColumnName] = OutlierData[SelectColumnName]#change values
+        normal = after.loc[(after[SelectColumnName] >= fence_low) & (after[SelectColumnName] <= fence_high)] #select not outlier data(normal data)
+        
+        if index == 0:
+            after = self.AllAggregation(after) #모든 값을 총계나 평균으로 변경            
+            self.afterGraph(after[SelectColumnName]) #Rendering after box plot
+        elif index == 1:
+            after = self.partAggregation(normal, after, fence_low, fence_high)  #이상치 값만 처리
+            self.afterGraph(after[SelectColumnName]) #Rendering after box plot
+        elif index == 2:
+            after = tab1_input.copy() 
+            after = self.partGroupAggregation(after)
+            print(after)
+            base = str(self.ui.columns.currentText())
+            self.afterGraph(after.groupby(base)[SelectColumnName].apply(list))
+            
 
+        """ float로 변경될 경우, 반올림 후 int로 재변환"""
+        after[SelectColumnName]=round(after[SelectColumnName],0)
+        after[SelectColumnName] = after[SelectColumnName].astype(int)
     #통계값 aggregation end
 
-    def addmpl(self, fig):
-        self.canvas = FigureCanvas(fig)
-        self.mplvl.addWidget(self.canvas)
-        self.canvas.draw()
+
+    #aggregation ui에 있는 comboBox에 값 넣기
+    def IndexSetting(self, index):
+        if index == 0:
+            self.ui.columns.hide()
+            self.ui.group.hide()
+            self.ui.function.clear() 
+            self.ui.function.addItem("SUM")
+            self.ui.function.addItem("MEAN")
+            self.beforeGraph(tab1_input[tab1_input.columns[SelectColumn]])
+        elif index == 1: 
+            self.ui.columns.hide()
+            self.ui.group.hide()
+            self.ui.function.clear() 
+            self.ui.function.addItem("MEAN")
+            self.ui.function.addItem("MAX")
+            self.ui.function.addItem("MIN")
+            self.ui.function.addItem("MEDIAN")
+            self.ui.function.addItem("MODE")
+            self.ui.function.addItem("REMOVE")
+            self.beforeGraph(tab1_input[tab1_input.columns[SelectColumn]])
+        elif index == 2:
+            self.ui.function.clear() 
+            self.ui.function.addItem("MEAN")
+            self.ui.function.addItem("MEDIAN")
+            self.ui.function.addItem("MODE")
+            self.ui.function.addItem("REMOVE")
+            
+            self.ui.columns.show() #컬럼 이름 넣기(현재 선택한 컬럼 제외)
+            self.ui.columns.clear()
+            for i in tab1_input.columns:
+                if i != SelectColumnName:
+                    self.ui.columns.addItem(i)
+
+            self.ui.group.show()
+            self.ui.group.clear() #선택한 컬럼에 유니크한 값만 뽑아서 comboBox에 추가
+            array = tab1_input[str(self.ui.columns.currentText())].unique()
+            array.sort()
+            for i in range(len(array)):
+                self.ui.group.addItem(str(array[i]))
+
+
+    def beforeGraph(self, data):
+        self.beforeFig.clear()
+        self.ax1 = self.beforeFig.add_subplot(1, 1, 1)  # fig를 1행 1칸으로 나누어 1칸안에 넣기
+        self.ax1.boxplot(data)
+        self.ax1.grid()
+        self.beforeCanvas.draw() 
+
+    def afterGraph(self, data):
+        self.afterFig.clear() #canvas clear
+        self.ax2 = self.afterFig.add_subplot(1, 1, 1)  # fig를 1행 1칸으로 나누어 1칸안에 넣기
+        self.ax2.boxplot(data)
+        self.ax2.grid()
+        self.afterCanvas.draw() 
+
+    def changeGraphCombobox(self):
+        base = str(self.ui.columns.currentText())
+        if base:
+            self.beforeGraph(tab1_input.sort_values([SelectColumnName]).groupby(base)[SelectColumnName].apply(list))
+
+            self.ui.group.show()
+            self.ui.group.clear() #선택한 컬럼에 유니크한 값만 뽑아서 comboBox에 추가
+            array = tab1_input[str(self.ui.columns.currentText())].unique()
+            array.sort()
+            for i in range(len(array)):
+                self.ui.group.addItem(str(array[i]))
+
+    #모든 값을 총계나 평균으로 변경
+    def AllAggregation(self, Outlier):
+        global SelectColumnName
+        index = self.ui.function.currentIndex() 
+        if index == 0: #총합으로 통일
+            Outlier[SelectColumnName] = Outlier[SelectColumnName].sum()
+        elif index == 1: #평균으로 통일
+            Outlier[SelectColumnName] = Outlier[SelectColumnName].mean()
+        return Outlier
+
+    #이상치 값만 처리
+    def partAggregation(self, Normal, Outlier, low, high):
+        global SelectColumnName
+        index = self.ui.function.currentIndex() 
+        if index == 0: #MEAN
+            Outlier.loc[(Outlier[SelectColumnName] < low) | (Outlier[SelectColumnName] > high)] = Normal[SelectColumnName].mean()
+        elif index == 1: #MAX
+            Outlier.loc[(Outlier[SelectColumnName] < low) | (Outlier[SelectColumnName] > high)] = Normal[SelectColumnName].max()
+        elif index == 2: #MIN
+            Outlier.loc[(Outlier[SelectColumnName] < low) | (Outlier[SelectColumnName] > high)] = Normal[SelectColumnName].min()
+        elif index == 3: #MEDIAN
+            Outlier.loc[(Outlier[SelectColumnName] < low) | (Outlier[SelectColumnName] > high)] = Normal[SelectColumnName].median()
+        elif index == 4: #MODE
+            mode = Normal[SelectColumnName].value_counts().idxmax() #최빈값
+            Outlier.loc[(Outlier[SelectColumnName] < low) | (Outlier[SelectColumnName] > high)] = mode
+        elif index == 5: #REMOVE
+            Outlier = Outlier.loc[(Outlier[SelectColumnName] >= low) & (Outlier[SelectColumnName] <= high)]
+        return Outlier
+
+
+    def partGroupAggregation(self, result):
+        groupcol = str(self.ui.columns.currentText()) #그룹 기준 컬럼
+        groupvalue = str(self.ui.group.currentText())   #그룹 기준 값
+
+        Outlier = tab1_input[tab1_input[groupcol].isin([groupvalue])]
+        print(Outlier)
+        q1 = Outlier[SelectColumnName].quantile(0.25) #calculate q1
+        q3 = Outlier[SelectColumnName].quantile(0.75) #calculate q3
+        iqr = q3-q1 #Interquartile range
+        low  = q1-1.5*iqr 
+        high = q3+1.5*iqr
+
+        list = []
+        Normal = Outlier.loc[(Outlier[SelectColumnName] >= low) & (Outlier[SelectColumnName] <= high)] #select normal data  
+        Outlier = Outlier.loc[(Outlier[SelectColumnName] < low) | (Outlier[SelectColumnName] > high)]
+        for row in Outlier.index: 
+            list.append(row)
+
+        index = self.ui.function.currentIndex() 
+        if index == 0: #MEAN    
+            for i in range(len(list)):
+                result[SelectColumnName][list[i]] = Normal[SelectColumnName].mean()
+        elif index == 1: #MEDIAN
+            for i in range(len(list)):
+                result[SelectColumnName][list[i]] =  Normal[SelectColumnName].median()
+        elif index == 2: #MODE
+            for i in range(len(list)):
+                mode = Normal[SelectColumnName].value_counts().idxmax() #최빈값
+                result[SelectColumnName][list[i]] =  mode
+        elif index == 3: #REMOVE
+            for i in range(len(list)):
+                result = result.drop(result.index[list[i]])
+        return result   
+
 
     #데이터 tab2_output 저장 및 화면 끄기
     def finishButton(self):
         global after, SelectColumnName, tab2_output, tab1_input
         tab2_output[tab2_output.columns[SelectColumn]] = after #change values
+        tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
         print(tab2_output)
         self.ui.hide()
+
+    def finishButton2(self):
+        global after, SelectColumnName, tab2_output, tab1_input
+        tab2_output[tab2_output.columns[SelectColumn]] = after[SelectColumnName] #change values
+        tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
+        print(tab2_output)
+        self.ui.hide()
+
 
 
 
