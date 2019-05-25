@@ -40,12 +40,12 @@
       <rect>
        <x>50</x>
        <y>62</y>
-       <width>57</width>
+       <width>131</width>
        <height>19</height>
       </rect>
      </property>
      <property name="text">
-      <string>교환</string>
+      <string>Swapping</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="Method2">
@@ -58,7 +58,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>재배열</string>
+      <string>Shuffle</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="Method3">
@@ -66,12 +66,12 @@
       <rect>
        <x>50</x>
        <y>139</y>
-       <width>72</width>
+       <width>141</width>
        <height>19</height>
       </rect>
      </property>
      <property name="text">
-      <string>범주화</string>
+      <string>Suppression</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="Method4">
@@ -79,12 +79,12 @@
       <rect>
        <x>50</x>
        <y>178</y>
-       <width>151</width>
-       <height>19</height>
+       <width>201</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>마스킹 및 삭제</string>
+      <string>Masking and Remove</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="Method6">
@@ -92,12 +92,12 @@
       <rect>
        <x>50</x>
        <y>288</y>
-       <width>72</width>
-       <height>19</height>
+       <width>151</width>
+       <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>라운딩</string>
+      <string>Rounding</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="Method5">
@@ -105,12 +105,12 @@
       <rect>
        <x>50</x>
        <y>250</y>
-       <width>72</width>
-       <height>19</height>
+       <width>121</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>통계값</string>
+      <string>Aggregation</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -118,12 +118,12 @@
       <rect>
        <x>30</x>
        <y>30</y>
-       <width>30</width>
+       <width>111</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>공통</string>
+      <string>Common</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
