@@ -26,13 +26,13 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 #to import UI path
-sys.path.append("./UI") # insert your path
+sys.path.append("./../UI") # insert your path
 import mplwidget
 
 
 global tab1_input # inputtable data from file, 원본 데이터
-global tab2_input
 global tab2_output ##비식별화 결과 tab2_output에 저장
+global Final_Output
 
 
 fileName = ""
@@ -40,38 +40,42 @@ fileName = ""
 class MainWidget(QMainWindow):
     """
     TODO: 
-    1. 메인 윈도우에서 데이터타입 바꾸기 구현 필요,
-    2. 식별자 구분이 잘 안되는 수정 필요
-    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값 완성 // 마스킹 삭제 교환  코딩중
-     3-1. 결측치 수정중
-     3-2. datetime도 이상치 ??
-     3-3. datetime??
-     3-4. 통계값: 회귀분석 보류
-    4. 프라이버시 모델 구현하기(익명성 다양성은 수정중, 근접성 코딩 필요)
+    1. 메인 윈도우에서 데이터타입 바꾸기 구현 필요
+    2. 식별자 구분이 잘 안되므로 수정 필요
+    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값, 교환 완성 // 마스킹 삭제 범주화 코딩중
+     3-1. 통계값에서 datetime, string 이상치 ??
+     3-2. 통계값: 회귀분석 보류, Part(group)은 여러번 적용되도록 수정필요, int형 데이터만 처리 가능
+     3-3. 교환에서 외부 파일 import 기능 없음(필요시 코딩)
+    4. 프라이버시 모델 구현하기(익명성, 다양성, 근접성)
+     4-1. 익명성, 다양성 기능 구현 완료. but, 사용자로부터 값을 입력받을 수 있게 수정 필요
+     4-2. 프라이버시 모델 설정을 위한 UI 필요
     5. 결측치 처리 구현 중
     6. run 함수 구현 필요: run 누르면 tab2의 결과창 보여주기
     7. compare graph 및 지표 결과 구현 필요
 
     기타: 
-    statusbar에 컬럼 및 행 정보 보여주기  
-    SaveFileDialog 함수 수정 필요(tab2의 output 데이터를 파일로 저장하도록, 현재 tab1_input으로 저장)
-    data type: int, string, datetime
+    - statusbar에 컬럼 및 행 정보 보여주기  
+    - SaveFileDialog 함수 수정 필요(tab2의 output 데이터를 파일로 저장하도록)
+    - 사용하는 data type: int, string, datetime
+    - window 사이즈 fix
+    - tab1의 data classification 구현 or 다른 기능으로 수정 
+    - 예외처리 필요한 부분 찾아서 처리해주기;;
+    ** 그 외 TODO 추가해주세요. **
     """
     def __init__(self):
         super().__init__()
-        self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: 기타. change dynamic text
         self.ui.show()        
 
         self.ui.INPUTtable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers) #editable false
         self.ui.INPUTtable.cellClicked.connect(self._cellclicked) # cell 클릭 시 식별자, 준식별자 등 radio button checked 
         self.ui.actionimport_data.triggered.connect(self.ImportData) #importData from csv
-        #self.ui.actionimport_data.triggered.connect(self.ImportFileDialog) #간단 import
         self.ui.actionsave_data.triggered.connect(self.SaveFileDialog) #export_data in menuBar, call save data event
         self.ui.actionEXIT.triggered.connect(self.CloseWindow) #exit in menuBar, call exit event
 
-        #self.ui.actionRun.triggered.connect() # TODO: 6. run 함수 구현 필요
-        self.ui.actionMissingValue.triggered.connect(self.Missing) #exit in menuBar, call exit event
+        self.ui.actionRun.triggered.connect(self.L_diversity) # TODO: 6. run 함수 구현 필요
+        self.ui.actionMissingValue.triggered.connect(self.Missing) #TODO: 5. 결측치 처리하기
         self.ui.actionNonIdentifier.triggered.connect(self.NonIdentifierMethod) # TODO: 3. 비식별화 함수 추가중
 
         #식별자 radio button change event
@@ -159,54 +163,83 @@ class MainWidget(QMainWindow):
                 self.ui.typeTable.setItem(col, 2, QTableWidgetItem(str("일반정보")))
                 print("changed to 일반정보")
 
-    def Missing(self): 
+    def Missing(self):  
+        """TODO: 5. 결측치 처리 함수 구현하기,,, string datetime, int 각각 처리 필요, tab1_input 대신 tab2_output 이용하기
+            결측치 처리하기, https://rfriend.tistory.com/262 수정필요"""
         #1. null 레코드 추출
         global tab1_input
         temp = tab1_input[tab1_input.isnull().any(axis=1) ==True]
         print("\n\n\n\this is null values\n\n\n\n")
         print(temp)
         
+        #2. 데이터 타입별로 처리해주기
         #tab1_input = tab1_input.fillna(tab1_input.mean()) #평균으로 처리
         tab1_input = tab1_input.where(pd.notnull(tab1_input), tab1_input.mean(), axis='columns') #평균으로 처리
         print(tab1_input)
-        
 
-    
+#TODO: 함수 구현하기
 
-#Jihye' code multiline start, 데이터타입별로 처리하기, 
-    #결측치 처리하기, https://rfriend.tistory.com/262 수정필요
+    def run(self):
+        #익명성 설정 시 함수 호출하도록하기
+        #self.K_anonymity()
+        print("nothing")
 
-    #데이터 비식별확기법 수정필요
-    def Swap():
-        print("a")
-
-    #K-Anonimiyu 수정필요
+    #K-Anonimiyu UI 만들고 , UI에 맞게 수정 필요
     def K_anonymity(self):
-        list = ['sex', 'age', 'loc']
-        df = tab1_input.groupby(list).size().reset_index(name='count')
-        df = df.loc[df['count']>1] #change parameter
-        del df['count']
-        print(df)
+        """준식별자를 기준으로 그룹화해서 동일 레코드 수 계산 ->
+        count 컬럼에 저장 -> count>=n 인 값만 추출 -> count 컬럼 delete  """
+        global tab2_output, Final_Output
+        try:
+            Final_Output
+        except NameError:
+           Final_Output = tab2_output.copy()
+        list = []
+        lenth = self.ui.typeTable.columnCount() #컬럼개수
+        for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
+            if(self.ui.typeTable.item(i,2).text() == '준식별자'):
+                list.append(self.ui.typeTable.item(i, 0).text())
 
-    def L_diversity(self): #수정필요
-        list = ['sex']
-        df = tab1_input.groupby(list).size().reset_index(name='count')
-        df = df.loc[df['count']>1] #change parameter
-        print(df)
+        Final_Output['count'] = Final_Output.groupby(list)[list[0]].transform('size')
+        Final_Output = Final_Output.loc[Final_Output['count']>=2] #2는 사용자로부터 입력받아야되는 숫자
+        del Final_Output['count']
+        print(Final_Output)
+    
+    #L_diversity UI 만들고 , UI에 맞게 수정 필요
+    def L_diversity(self): 
+        """준식별자를 기준으로 그룹화해서 동일 레코드 수에 대한 유니크 값 계산 ->
+        count 컬럼에 저장 -> count>=n 인 값만 추출 -> count 컬럼 delete  """
+        global tab2_output, Final_Output
+        try:
+            Final_Output
+        except NameError:
+           Final_Output = tab2_output.copy()
+            
 
-    def T_closeness(self): #수정필요
+        list = []
+        lenth = self.ui.typeTable.columnCount() #컬럼개수
+        for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
+            if(self.ui.typeTable.item(i,2).text() == '준식별자'):
+                list.append(self.ui.typeTable.item(i, 0).text())
+
+        Final_Output['count'] = Final_Output.groupby(list)['salary'].transform('nunique') #salary -> 사용자 선택 민감정보
+        Final_Output = Final_Output.loc[Final_Output['count']>=2] #2는 사용자로부터 입력받아야되는 숫자
+        del Final_Output['count']
+        print(Final_Output)
+
+    def T_closeness(self): 
         print("A")
-#Jihye' code multiline finish
-        
-    def SaveFileDialog(self): #TODO: 기타. 함수 수정 필요, tab2_output convert to csv file and save
+#TODO: 함수 구현하기
+
+
+    def SaveFileDialog(self): #TODO: 기타. 함수 수정 필요, tab2_output.copy() 수정하기
         options = QFileDialog.Options()
         fileName, _ = QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "",
                                                   "All Files (*);;Python Files (*.py);; CSV Files(*.csv);; Excel Files(*.xlsx)", 
                                                   "CSV Files(*.csv)",
                                                   options=options)
         if fileName:
-            output = DataFrame(tab1_input)
-            print(tab1_input)
+            output = tab2_output.copy()
+            print(output)
             output.to_csv(fileName, encoding='ms949', index=False)  
 
     def CloseWindow(self, event):
@@ -222,7 +255,7 @@ class MainWidget(QMainWindow):
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
         super(ImportDataWindow, self).__init__(parent)
-        self.ui = uic.loadUi("./UI/ImportData.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/ImportData.ui") #insert your UI path
         self.ui.show()
         self.ui.toolButton.clicked.connect(self.ImportDataButton)
         self.ui.cancelButton.clicked.connect(self.cancelButton)
@@ -268,7 +301,7 @@ class ImportDataWindow(QMainWindow):
 class ModifyData(QMainWindow):
     def __init__(self, parent=None):
         super(ModifyData, self).__init__(parent)
-        self.ui = uic.loadUi("./UI/ModifyData.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/ModifyData.ui") #insert your UI path
         self.ui.show()
         
         global tab1_input
@@ -453,7 +486,7 @@ class NonIdentifierMethod(QMainWindow):
         self.InitUI()
 
     def InitUI(self):
-        self.ui = uic.loadUi("./UI/SelectNonIdentifierMethod.ui") #insert your UI path
+        self.ui = uic.loadUi("./../UI/SelectNonIdentifierMethod.ui") #insert your UI path
         self.ui.show()
 
         global before, SelectColumn, SelectColumnName, rownum, colnum
@@ -465,20 +498,49 @@ class NonIdentifierMethod(QMainWindow):
         colnum = len(before.columns) # get column count
 
         if(self.parent().ui.typeTable.item(SelectColumn, 1).text() != 'int64'): #int64만 수치데이터 method 사용
-            self.ui.Method5.setCheckable(False)
-            self.ui.Method6.setCheckable(False)
+            self.ui.Method5.setEnabled(False)
+            self.ui.Method6.setEnabled(False)
 
         self.ui.nextButton.clicked.connect(self.NextButton) #비식별화 방식 선택(6개 중 택 1 가능)
         self.ui.cancelButton.clicked.connect(self.ui.hide)
 
     #radio button event start 
     def NextButton(self):
-        global before, rownum, colnum
-
-        if(self.ui.Method2.isChecked()): # Shuffle UI 보여주기 및 데이터 rendering
-            self.ui = uic.loadUi("./UI/Shuffle.ui") #insert your UI path
+ 
+        if(self.ui.Method1.isChecked()): #Swap UI 보여주기 및 데이터 rendering
+            self.ui = uic.loadUi("./../UI/Swap.ui") #insert your UI path
             self.ui.show()
-            
+            self.ui.ImportButton.hide()
+
+            """유니크 값 추출 후 테이블에 저장"""
+            self.uniqueIndex = before[SelectColumnName].unique().tolist()
+            self.uniqueIndex.sort()
+
+            self.ui.swapTable.setRowCount(len(self.uniqueIndex)) 
+            self.ui.swapTable.setHorizontalHeaderLabels(['before', 'after'])
+
+            for i in range(len(self.uniqueIndex)):
+                self.ui.swapTable.setItem(i,0,QTableWidgetItem(str(self.uniqueIndex[i])))
+
+            """선택한 컬럼의 데이터만 보여주기"""
+            self.ui.compareTable.setRowCount(rownum)
+            self.ui.compareTable.setHorizontalHeaderLabels([SelectColumnName, SelectColumnName])
+
+            for j in range(rownum):
+                self.ui.compareTable.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
+
+            #self.ui.ImportButton.clicked.connect(self.)
+            self.ui.runButton.clicked.connect(self.Swap)
+            self.ui.finishButton.clicked.connect(self.finishButton)
+            self.ui.cancelButton.clicked.connect(self.ui.hide)
+            self.ui.backButton.clicked.connect(self.InitUI)
+
+
+        elif(self.ui.Method2.isChecked()): # Shuffle UI 보여주기 및 데이터 rendering
+            self.ui = uic.loadUi("./../UI/Shuffle.ui") #insert your UI path
+            self.ui.show()
+
+            self.ui.BeforeData.setColumnCount(colnum) #Set Column Count
             self.ui.BeforeData.setRowCount(rownum) #Set Column Count s    
             self.ui.BeforeData.setHorizontalHeaderLabels(list(before.columns))
 
@@ -491,11 +553,14 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
-        elif(self.ui.Method5.isChecked()): # 통계값 처리 UI 및 박스 그래프 보여주기
-            self.ui = uic.loadUi("./UI/Aggregation.ui") #insert your UI path
-            self.ui.show()
+        elif(self.ui.Method3.isChecked()):
+            print("범주화 메소드") #insert 유진's code
+        elif(self.ui.Method4.isChecked()):
+            print("마스킹 및 삭제") #insert 유진's code
 
-            global SelectColumn
+        elif(self.ui.Method5.isChecked()): # 통계값 처리 UI 및 박스 그래프 보여주기
+            self.ui = uic.loadUi("./../UI/Aggregation.ui") #insert your UI path
+            self.ui.show()
             
             #Rendering before box plot start
             self.beforeFig = plt.Figure()
@@ -527,10 +592,11 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
 
         elif(self.ui.Method6.isChecked()): # 라운딩 UI 및 before data 테이블 값 넣기
-            self.ui = uic.loadUi("./UI/Rounding.ui") #insert your UI path
+            self.ui = uic.loadUi("./../UI/Rounding.ui") #insert your UI path
             self.ui.show()
             self.ui.randomLabel.hide()
             
+            self.ui.BeforeData.setColumnCount(colnum) #Set Column Count    
             self.ui.BeforeData.setRowCount(rownum) #Set Column Count s 
             self.ui.BeforeData.setHorizontalHeaderLabels(list(before.columns))
 
@@ -542,9 +608,20 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.finishButton.clicked.connect(self.finishButton)
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
-    
+
     #radio button event end 
 
+    #data swap start
+    def Swap(self):      
+        """swapTable의 after 값으로 바꾸기"""
+        global before, after
+        after = before.copy()
+        for i in range(len(self.uniqueIndex)):
+            after.loc[after[SelectColumnName]==str(self.uniqueIndex[i]), SelectColumnName] = self.ui.swapTable.item(i,1).text()
+
+        for j in range(rownum):
+            self.ui.compareTable.setItem(j,1,QTableWidgetItem(str(after[after.columns[0]][j])))
+    #data swap end
 
     #data shuffle(재배열) start          
     def Shuffle(self):
@@ -658,7 +735,6 @@ class NonIdentifierMethod(QMainWindow):
         after[SelectColumnName] = after[SelectColumnName].astype(int)
     #통계값 aggregation end
 
-
     #aggregation ui에 있는 comboBox에 값 넣기
     def IndexSetting(self, index):
         if index == 0:
@@ -698,7 +774,6 @@ class NonIdentifierMethod(QMainWindow):
             array.sort()
             for i in range(len(array)):
                 self.ui.group.addItem(str(array[i]))
-
 
     def beforeGraph(self, data):
         self.beforeFig.clear()
@@ -755,7 +830,7 @@ class NonIdentifierMethod(QMainWindow):
             Outlier = Outlier.loc[(Outlier[SelectColumnName] >= low) & (Outlier[SelectColumnName] <= high)]
         return Outlier
 
-
+    #그룹화 후 이상치 값 선별 및 처리
     def partGroupAggregation(self, result):
         groupcol = str(self.ui.columns.currentText()) #그룹 기준 컬럼
         groupvalue = str(self.ui.group.currentText())   #그룹 기준 값
@@ -799,6 +874,7 @@ class NonIdentifierMethod(QMainWindow):
         print(tab2_output)
         self.ui.hide()
 
+    #통계값에서 part(group) 저장 시 사용
     def finishButton2(self):
         global after, SelectColumnName, tab2_output, tab1_input
         tab2_output[tab2_output.columns[SelectColumn]] = after[SelectColumnName] #change values
