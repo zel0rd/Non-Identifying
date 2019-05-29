@@ -49,11 +49,14 @@ class MainWidget(QMainWindow):
      4-1. 익명성, 다양성 기능 구현 완료 => 익명성은 한번만 사용하도록 수정 필요
      4-2. 프라이버시 모델 UI 없음
      4-3. 식별자도 그룹화해야하는 것인지??
-    5. 결측치 처리 (처리방법: 평균 중앙값 최빈값 삭제)
-     5-1. 예측값(회귀분석, k-군집분류 등) 보류, 현재 시계열 데이터 처리 불가
-     5-2. 데이터 타입별로 처리 필요, 현재 문자열로 mean, median 사용시 버그 발생
+    5. 결측치 처리 
+     5-1. 처리방법: 평균 중앙값 최빈값 삭제 -> ok
+     5-2. 예측값(회귀분석, k-군집분류 등) 보류, 현재 시계열 데이터 처리 불가
+     5-3. 데이터 타입별로 처리 필요, 현재 문자열로 mean, median 사용시 버그 발생
     6. run 함수 구현 필요: run 누르면 tab2의 결과창 보여주기 -> OK
     7. compare graph 및 지표 결과 구현 필요
+     7-2. 재식별 리스크 그래프 필요 -> ok 
+     7-1. 데이터 손실 및 유용성 그래프 필요
 
     기타: 
     - statusbar에 컬럼 및 행 정보 보여주기  
@@ -61,9 +64,10 @@ class MainWidget(QMainWindow):
     - 사용하는 data type: int, string, datetime
     - newwindow 사이즈 fix
     - tab1의 data classification 구현 or 다른 기능으로 수정 
-    - 예외처리 필요한 부분 찾아서 처리해주기;;
+    - 데이터 타입 혹은 데이터가 없어서 생기는 버그 예외처리 해주기;;
     ** 그 외 TODO 추가해주세요. **
     """
+    
     def __init__(self):
         super().__init__()
         self.ui = uic.loadUi("./../UI/NonIdentifierUI.ui") #insert your UI path
@@ -88,6 +92,7 @@ class MainWidget(QMainWindow):
         #privacy model button event
         self.ui.privacyAdd.clicked.connect(self.PrivacyAdd)
         self.ui.privacyDelete.clicked.connect(self.PrivacyDelete)
+        
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -171,8 +176,8 @@ class MainWidget(QMainWindow):
         self.ui.privacyTable.removeRow(self.ui.privacyTable.currentRow())
 
     def run(self):
-        #익명성 설정 시 함수 호출하도록하기
-        global tab2_output, Final_Output
+        global tab1_input, tab2_output, Final_Output
+
         Final_Output = tab2_output.copy() #비식별화만 된 데이트를 프라이버시 모델에 입력
 
         #프라이버시 모델 적용
@@ -182,31 +187,83 @@ class MainWidget(QMainWindow):
                 current_value = widget.currentText()
                 if(current_value == 'K'):
                     number = self.ui.privacyTable.item(r, 1).text()
-                    self.K_anonymity(Final_Output, int(number))
+                    Final_Output = self.K_anonymity(Final_Output, int(number))
                 elif(current_value == 'L'):
                     number = self.ui.privacyTable.item(r, 1).text()
                     columnName = self.ui.privacyTable.cellWidget(r, 2).currentText()
-                    self.L_diversity(Final_Output, number, columnName)
+                    Final_Output = self.L_diversity(Final_Output, number, columnName)
                 elif(current_value == 'T'):
                     print(self.ui.privacyTable.item(r, 1).text())
         
         #tab2의 tables setItem
-        colnum = len(Final_Output.columns) # get column count
-        rownum = len(Final_Output.index) # get row count
+        colnum = len(tab1_input.columns) # get column count
+        rownum = len(tab1_input.index) # get row count
         self.ui.INPUTDATAtable.setColumnCount(colnum) #Set Column Count
-        self.ui.INPUTDATAtable.setColumnRow(rownum) #Set Column Count     
-        self.ui.INPUTDATAtable.setHorizontalHeaderLabels(list(Final_Output.columns))
-        self.ui.OUTPUTDATAtable.setColumnCount(colnum) #Set Column Count  
-        self.ui.OUTPUTDATAtable.setColumnRow(rownum) #Set Column Count     
-        self.ui.OUTPUTDATAtable.setHorizontalHeaderLabels(list(Final_Output.columns))  
+        self.ui.INPUTDATAtable.setRowCount(rownum) #Set Column Count     
+        self.ui.INPUTDATAtable.setHorizontalHeaderLabels(tab1_input.columns.tolist())
 
         for i in range(colnum):
-            for j in range(rownum): #rendering data (inputtable of Tab1)
-                self.ui.INPUTDATAtable.setItem(j,i,QTableWidgetItem(str(Final_Output[Final_Output.columns[i]][j])))
+            for j in range(rownum): #rendering data (inputtable of Tab2)
+                self.ui.INPUTDATAtable.setItem(j,i,QTableWidgetItem(str(tab1_input[tab1_input.columns[i]][j])))
+        
+        colnum = len(Final_Output.columns) # get column count
+        rownum = len(Final_Output.index) # get row count
+        self.ui.OUTPUTDATAtable.setColumnCount(colnum) #Set Column Count  
+        self.ui.OUTPUTDATAtable.setRowCount(rownum) #Set Column Count     
+        self.ui.OUTPUTDATAtable.setHorizontalHeaderLabels(Final_Output.columns.tolist())
+
+        for i in range(colnum):
+            for j in range(rownum): #rendering data (outputtable of Tab2)
                 self.ui.OUTPUTDATAtable.setItem(j,i,QTableWidgetItem(str(Final_Output[Final_Output.columns[i]][j])))
         
-        self.ui.tabWidget.setCurrentIndex(1) #탭 전환
         
+        #set graph
+        graphcount = tab1_input.copy()
+        self.max = 0
+        list = []
+        lenth = self.ui.typeTable.rowCount() #컬럼개수
+        for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
+            if(self.ui.typeTable.item(i,2).text() == '준식별자'):
+                list.append(self.ui.typeTable.item(i, 0).text())
+
+        graphcount = graphcount.groupby(list).count()
+        graphcount = 1 / graphcount
+        print(graphcount[graphcount.columns[0]])
+        self.show_beforegraph(self.ui.inputGraph, graphcount[graphcount.columns[0]])
+
+        graphcount = Final_Output.copy()
+        list = []
+        lenth = self.ui.typeTable.rowCount() #컬럼개수
+        for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
+            if(self.ui.typeTable.item(i,2).text() == '준식별자'):
+                list.append(self.ui.typeTable.item(i, 0).text())
+
+        graphcount = graphcount.groupby(list).count()
+        graphcount = 1 / graphcount
+        print(graphcount[graphcount.columns[0]])
+        self.show_aftergraph(self.ui.outputGraph, graphcount[graphcount.columns[0]], self.max.max())
+
+        self.ui.tabWidget.setCurrentIndex(1) #탭 전환
+
+    def show_beforegraph(self, widget, data):
+        """ reference: https://yapayzekalabs.blogspot.com/2018/11/pyqt5-gui-qt-designer-matplotlib.html
+        tab2 그래프 그리기"""
+        widget.canvas.axes.clear()
+        widget.canvas.axes.hist(data)
+        widget.canvas.axes.set_title('Risk of Re-Identification')
+        self.max, x, _ = widget.canvas.axes.hist(data)
+        widget.canvas.draw()
+    
+    def show_aftergraph(self, widget, data, max):
+        """ reference: https://yapayzekalabs.blogspot.com/2018/11/pyqt5-gui-qt-designer-matplotlib.html
+        tab2 그래프 그리기"""
+        widget.canvas.axes.clear()
+        widget.canvas.axes.hist(data)
+        widget.canvas.axes.set_title('Risk of Re-Identification')
+        widget.canvas.axes.set_ylim([0, max])
+        widget.canvas.draw()
+
+
     #K-Anonimity
     def K_anonymity(self, dataframe, number):
         """준식별자를 기준으로 그룹화해서 동일 레코드 수 계산 ->
@@ -217,7 +274,7 @@ class MainWidget(QMainWindow):
             QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
         pass
         list = []
-        lenth = self.ui.typeTable.columnCount() #컬럼개수
+        lenth = self.ui.typeTable.rowCount() #컬럼개수
         for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
             if(self.ui.typeTable.item(i,2).text() == '준식별자'):
                 list.append(self.ui.typeTable.item(i, 0).text())
@@ -225,7 +282,9 @@ class MainWidget(QMainWindow):
         dataframe['count'] = dataframe.groupby(list)[list[0]].transform('size')
         dataframe = dataframe.loc[dataframe['count']>=number] #user parameter
         del dataframe['count']
+        dataframe = dataframe.reset_index(drop=True)
         print(dataframe)
+        return dataframe
     
     #L_diversity
     def L_diversity(self, dataframe, number, column): 
@@ -238,7 +297,7 @@ class MainWidget(QMainWindow):
         pass
 
         list = []
-        lenth = self.ui.typeTable.columnCount() #컬럼개수
+        lenth = self.ui.typeTable.rowCount() #컬럼개수
         for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
             if(self.ui.typeTable.item(i,2).text() == '준식별자'):
                 list.append(self.ui.typeTable.item(i, 0).text())
@@ -246,7 +305,9 @@ class MainWidget(QMainWindow):
         dataframe['count'] = dataframe.groupby(list)[column].transform('nunique') #salary -> 사용자 선택 민감정보
         dataframe = dataframe.loc[dataframe['count']>=number] #2는 사용자로부터 입력받아야되는 숫자
         del dataframe['count']
+        dataframe = dataframe.reset_index(drop=True)       
         print(dataframe)
+        return dataframe
 
 
 #TODO: 함수 구현하기
