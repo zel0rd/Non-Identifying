@@ -295,9 +295,16 @@ class MaskingDataMethod(QMainWindow):
         SelectColumn = self.parent().ui.INPUTtable.currentColumn() #get Selected Column number
         SelectColumnName = self.parent().ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
         
-        print("===========")
-        print(SelectColumn)
-        print(SelectColumnName)
+        self.level = self.ui.maskingText.toPlainText()
+        """
+        try:
+            self.level = int(self.level)
+            if(self.level<1):
+                self.level/0
+        except Exception:
+            QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
+        pass
+        """
 
         before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
         #after = before.copy()
@@ -321,12 +328,11 @@ class MaskingDataMethod(QMainWindow):
    
         self.ui.maskingLevel.setRowCount(rownum) #Set Column Count s    
 
-        
-        level1 = before.copy()
-        level2 = level1.copy()
-        level3 = level2.copy()
-
-        
+        global before, after
+    
+        after = before.copy()
+        #level2 = level1.copy()
+        #level3 = level2.copy()
 
         before_uniq = before[before.columns[0]].unique()
         print(before_uniq)
@@ -334,9 +340,7 @@ class MaskingDataMethod(QMainWindow):
         
         uniq = [] #type : list
         uniq_slice = []
-        
         uniq_len = []
-        
         max_len = len(str(before[before.columns[0]][0]))
 
         #print("before")
@@ -359,27 +363,18 @@ class MaskingDataMethod(QMainWindow):
          
                 uniq_len.append(len(uniq[u])) # 마스킹할 데이터의 최대 길이 구하는 것
 
-                #for n in range(uniq_len):
-                if level1[level1.columns[0]][j] == uniq[u]:
-                    level1[level1.columns[0]][j] = str(before[before.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-1], "*")
-                    level2[level2.columns[0]][j] = str(level1[level1.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-2], "*")
-                    level3[level3.columns[0]][j] = str(level2[level2.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-3], "*")
+                for l in range(1,self.level+1):
+                    if before[before.columns[0]][j] == uniq[u]:
+                        after[after.columns[0]][j] = str(before[before.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+                        #level2[level2.columns[0]][j] = str(level1[level1.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-2], "*")
+                        #level3[level3.columns[0]][j] = str(level2[level2.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-3], "*")
 
             self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((level1[level1.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,2,QTableWidgetItem((level2[level2.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,3,QTableWidgetItem((level3[level3.columns[0]][j])))
+            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((after[after.columns[0]][j])))
+            #self.ui.maskingLevel.setItem(j,2,QTableWidgetItem((level2[level2.columns[0]][j])))
+            #self.ui.maskingLevel.setItem(j,3,QTableWidgetItem((level3[level3.columns[0]][j])))
         
-        print("check")
-        
-        print(before[before.columns[0]][0])
-        
-        print("UNIQUE")
-    
-            #str(1).zfiil(2)  #0으로 채우기
-        
-        self.ui.maskingLevel.setColumnCount(max_len+1)
-        print(max_len)
+        #self.ui.cancelButton.clicked.connect(self.MaskingDataMethod)
 
     
 
