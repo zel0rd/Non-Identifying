@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 #to import UI path
-sys.path.append("./../UI") # insert your path
+sys.path.append("./UI") # insert your path
 import mplwidget
 
 
@@ -70,7 +70,7 @@ class MainWidget(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.ui = uic.loadUi("./../UI/NonIdentifierUI.ui") #insert your UI path
+        self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: 기타. change dynamic text
         self.ui.show()        
 
@@ -340,7 +340,7 @@ class MainWidget(QMainWindow):
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
         super(ImportDataWindow, self).__init__(parent)
-        self.ui = uic.loadUi("./../UI/ImportData.ui") #insert your UI path
+        self.ui = uic.loadUi("./UI/ImportData.ui") #insert your UI path
         self.ui.show()
 
         self.ui.InputData.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers) #editable false
@@ -388,7 +388,7 @@ class ImportDataWindow(QMainWindow):
 class ModifyData(QMainWindow):
     def __init__(self, parent=None):
         super(ModifyData, self).__init__(parent)
-        self.ui = uic.loadUi("./../UI/ModifyData.ui") #insert your UI path
+        self.ui = uic.loadUi("./UI/ModifyData.ui") #insert your UI path
         self.ui.show()
         
         global tab1_input
@@ -608,7 +608,7 @@ class NonIdentifierMethod(QMainWindow):
         self.InitUI()
 
     def InitUI(self):
-        self.ui = uic.loadUi("./../UI/SelectNonIdentifierMethod.ui") #insert your UI path
+        self.ui = uic.loadUi("./UI/SelectNonIdentifierMethod.ui") #insert your UI path
         self.ui.show()
 
         global before, SelectColumn, SelectColumnName, rownum, colnum
@@ -630,7 +630,7 @@ class NonIdentifierMethod(QMainWindow):
     def NextButton(self):
  
         if(self.ui.Method1.isChecked()): #Swap UI 보여주기 및 데이터 rendering
-            self.ui = uic.loadUi("./../UI/Swap.ui") #insert your UI path
+            self.ui = uic.loadUi("./UI/Swap.ui") #insert your UI path
             self.ui.show()
             self.ui.ImportButton.hide()
 
@@ -659,7 +659,7 @@ class NonIdentifierMethod(QMainWindow):
 
 
         elif(self.ui.Method2.isChecked()): # Shuffle UI 보여주기 및 데이터 rendering
-            self.ui = uic.loadUi("./../UI/Shuffle.ui") #insert your UI path
+            self.ui = uic.loadUi("./UI/Shuffle.ui") #insert your UI path
             self.ui.show()
 
             self.ui.BeforeData.setColumnCount(colnum) #Set Column Count
@@ -679,9 +679,19 @@ class NonIdentifierMethod(QMainWindow):
             print("범주화 메소드") #insert ujin's code
         elif(self.ui.Method4.isChecked()):
             print("마스킹 및 삭제") #insert ujin's code
+            self.ui = uic.loadUi("./UI/maskingData.ui") #insert your UI path
+            self.ui.show()
+
+            before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
+            #after = before.copy()
+            rownum = len(before.index) # get row count
+            colnum = len(before.columns) # get column count
+
+            self.ui.nextButton.clicked.connect(self.Masking)
+            self.ui.cancelButton.clicked.connect(self.ui.hide)
 
         elif(self.ui.Method5.isChecked()): # 통계값 처리 UI 및 박스 그래프 보여주기
-            self.ui = uic.loadUi("./../UI/Aggregation.ui") #insert your UI path
+            self.ui = uic.loadUi("./UI/Aggregation.ui") #insert your UI path
             self.ui.show()
             
             #Rendering before box plot start
@@ -714,7 +724,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
 
         elif(self.ui.Method6.isChecked()): # 라운딩 UI 및 before data 테이블 값 넣기
-            self.ui = uic.loadUi("./../UI/Rounding.ui") #insert your UI path
+            self.ui = uic.loadUi("./UI/Rounding.ui") #insert your UI path
             self.ui.show()
             self.ui.randomLabel.hide()
             
@@ -769,6 +779,53 @@ class NonIdentifierMethod(QMainWindow):
         for i in range(rownum): #rendering data
             self.ui.AfterData.setItem(i,0,QTableWidgetItem(str(after[i])))
     #Shuffle() end
+
+    def Masking(self):
+
+        self.ui = uic.loadUi("./UI/maskingData_review.ui") #insert your UI path
+        self.ui.show()
+        self.ui.maskingLevel.setRowCount(rownum) #Set Column Count s    
+
+        level1 = before.copy()
+        level2 = level1.copy()
+        level3 = level2.copy()
+
+        before_uniq = before[before.columns[0]].unique()
+        
+        uniq = [] #type : list
+        uniq_slice = []
+        uniq_len = []
+        max_len = len(str(before[before.columns[0]][0]))
+
+        for j in range(rownum): #rendering data (inputtable of Tab1)
+            #self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
+            if max_len < len(str(before[before.columns[0]][j])):
+                max_len = len(str(before[before.columns[0]][j]))
+
+        self.ui.maskingLevel.setColumnCount(max_len+1)
+
+        for j in range(rownum): #rendering data (inputtable of Tab1)
+            for u in range(len(before_uniq)):
+                uniq.append(before_uniq[u])
+                uniq[u] = str(uniq[u]) 
+                uniq_slice.append(list(uniq[u])) # 한글자씩 추출하기 위해 list 사용
+                uniq_len.append(len(uniq[u])) # 마스킹할 데이터의 최대 길이 구하는 것
+
+                #for n in range(uniq_len):
+                if level1[level1.columns[0]][j] == uniq[u]:
+                    level1[level1.columns[0]][j] = str(before[before.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-1], "*")
+                    level2[level2.columns[0]][j] = str(level1[level1.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-2], "*")
+                    level3[level3.columns[0]][j] = str(level2[level2.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-3], "*")
+
+            self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
+            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((level1[level1.columns[0]][j])))
+            self.ui.maskingLevel.setItem(j,2,QTableWidgetItem((level2[level2.columns[0]][j])))
+            self.ui.maskingLevel.setItem(j,3,QTableWidgetItem((level3[level3.columns[0]][j])))
+        
+        
+
+        self.ui.finishButton.clicked.connect(self.finishButton)
+        self.ui.cancelButton.clicked.connect(self.ui.hide)
 
     #data Rounding start
     def Rounding(self):
