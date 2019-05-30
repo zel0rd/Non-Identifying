@@ -163,7 +163,7 @@
      <rect>
       <x>30</x>
       <y>40</y>
-      <width>301</width>
+      <width>551</width>
       <height>61</height>
      </rect>
     </property>
@@ -173,7 +173,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Data Masking</string>
+     <string>Non-Identifier: Masking and Remove</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="maskingBox">
