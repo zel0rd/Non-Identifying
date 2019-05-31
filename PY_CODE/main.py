@@ -56,7 +56,9 @@ class MainWidget(QMainWindow):
     6. run 함수 구현 필요: run 누르면 tab2의 결과창 보여주기 -> OK
     7. compare graph 및 지표 결과 구현 필요
      7-2. 재식별 리스크 그래프 필요 -> ok 
-     7-1. 데이터 손실 및 유용성 그래프 필요
+     7-1. 데이터 손실 및 유용성 그래프 필요 ---------------------------------------------------------------->먼저하기(1)
+    8. 라디오 버튼 밑에 식별자, 비식별자, 민감정보, 일반정보 보여주기 ---------------------------------------->먼저하기(3)
+    9. 비식별 적용 함수 테이블에 보여주기 ------------------------------------------------------------------> 먼저하기(2)
 
     기타: 
     - statusbar에 컬럼 및 행 정보 보여주기  
@@ -64,7 +66,8 @@ class MainWidget(QMainWindow):
     - 사용하는 data type: int, string, datetime
     - newwindow 사이즈 fix
     - tab1의 data classification 구현 or 다른 기능으로 수정 
-    - 데이터 타입 혹은 데이터가 없어서 생기는 버그 예외처리 해주기;;
+    - 데이터 타입, 데이터가 없어서 생기는 에러 예외처리 해주기;;
+    - 비식별 클래스에 있는 전역변수 self로 바꿔주기
     ** 그 외 TODO 추가해주세요. **
     """
     
@@ -628,7 +631,7 @@ class NonIdentifierMethod(QMainWindow):
 
     #radio button event start 
     def NextButton(self):
- 
+        global before, SelectColumn, SelectColumnName, rownum, colnum
         if(self.ui.Method1.isChecked()): #Swap UI 보여주기 및 데이터 rendering
             self.ui = uic.loadUi("./UI/Swap.ui") #insert your UI path
             self.ui.show()
@@ -1047,7 +1050,7 @@ class NonIdentifierMethod(QMainWindow):
 
     #데이터 tab2_output 저장 및 화면 끄기
     def finishButton(self):
-        global after, SelectColumnName, tab2_output, tab1_input
+        global after, SelectColumn, SelectColumnName, tab2_output, tab1_input
         tab2_output[tab2_output.columns[SelectColumn]] = after #change values
         tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
         print(tab2_output)
@@ -1055,7 +1058,7 @@ class NonIdentifierMethod(QMainWindow):
 
     #통계값에서 part(group) 저장 시 사용
     def finishButton2(self):
-        global after, SelectColumnName, tab2_output, tab1_input
+        global after, SelectColumn, SelectColumnName, tab2_output, tab1_input
         tab2_output[tab2_output.columns[SelectColumn]] = after[SelectColumnName] #change values
         tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
         print(tab2_output)
