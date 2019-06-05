@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>817</height>
+    <width>935</width>
+    <height>845</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -34,7 +34,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_13">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -56,7 +56,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="AnalysisTab">
        <property name="sizePolicy">
@@ -85,6 +85,18 @@
             <string>Input data</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
+            <property name="leftMargin">
+             <number>11</number>
+            </property>
+            <property name="topMargin">
+             <number>11</number>
+            </property>
+            <property name="rightMargin">
+             <number>11</number>
+            </property>
+            <property name="bottomMargin">
+             <number>11</number>
+            </property>
             <item row="0" column="0">
              <widget class="QTableWidget" name="INPUTtable">
               <property name="sizePolicy">
@@ -234,7 +246,7 @@
              </size>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="DTtab">
              <property name="sizePolicy">
@@ -246,15 +258,9 @@
              <attribute name="title">
               <string>Data transformation</string>
              </attribute>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="0">
                <widget class="QSplitter" name="splitter">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
@@ -317,15 +323,20 @@
                   </item>
                  </layout>
                 </widget>
-                <widget class="QTableWidget" name="DTtable">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
+                <widget class="QListWidget" name="typeListWidget">
+                 <property name="font">
+                  <font>
+                   <underline>true</underline>
+                  </font>
                  </property>
-                 <property name="rowCount">
-                  <number>0</number>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::SingleSelection</enum>
+                 </property>
+                 <property name="currentRow">
+                  <number>-1</number>
                  </property>
                 </widget>
                </widget>
@@ -492,12 +503,17 @@
                </property>
                <column>
                 <property name="text">
+                 <string>Attirbute</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
                  <string>Classification</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>Attirbute</string>
+                 <string>Level</string>
                 </property>
                </column>
               </widget>
@@ -520,12 +536,24 @@
         <string>비식별</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_9">
-        <item row="0" column="1">
+        <item row="0" column="0">
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
            <string/>
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
+           <property name="leftMargin">
+            <number>11</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>11</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item row="0" column="0">
             <widget class="QSplitter" name="splitter_4">
              <property name="orientation">
@@ -543,16 +571,16 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_8">
                <property name="leftMargin">
-                <number>0</number>
+                <number>11</number>
                </property>
                <property name="topMargin">
                 <number>0</number>
                </property>
                <property name="rightMargin">
-                <number>0</number>
+                <number>11</number>
                </property>
                <property name="bottomMargin">
-                <number>0</number>
+                <number>11</number>
                </property>
                <item row="0" column="0">
                 <widget class="QSplitter" name="splitter_5">
@@ -805,36 +833,46 @@
                </item>
               </layout>
              </widget>
-             <widget class="QGroupBox" name="inputGraphBox">
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
+             <widget class="QTabWidget" name="tabWidget_2">
+              <property name="currentIndex">
+               <number>1</number>
               </property>
-              <property name="title">
-               <string>Compare Graph</string>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_10">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QSplitter" name="splitter_6">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <widget class="MplWidget" name="inputGraph" native="true"/>
-                 <widget class="MplWidget" name="outputGraph" native="true"/>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QWidget" name="CorrelationGraph">
+               <attribute name="title">
+                <string>CorrelationGraph</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout">
+                <item row="0" column="0">
+                 <widget class="QSplitter" name="splitter_6">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <widget class="QWidget" name="horizontalLayoutWidget">
+                   <layout class="QHBoxLayout" name="inputGraph1"/>
+                  </widget>
+                  <widget class="QWidget" name="horizontalLayoutWidget_2">
+                   <layout class="QHBoxLayout" name="outputGraph1"/>
+                  </widget>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="RiskGraph">
+               <attribute name="title">
+                <string>RiskGraph</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_12">
+                <item row="0" column="0">
+                 <widget class="QSplitter" name="splitter_7">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <widget class="MplWidget" name="inputGraph" native="true"/>
+                  <widget class="MplWidget" name="outputGraph" native="true"/>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </widget>
            </item>
@@ -849,6 +887,11 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="font">
+    <font>
+     <underline>false</underline>
+    </font>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -868,7 +911,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>820</width>
+     <width>935</width>
      <height>26</height>
     </rect>
    </property>
