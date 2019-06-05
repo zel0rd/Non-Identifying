@@ -22,7 +22,10 @@ from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as Navigati
                                                 FigureCanvasQTAgg as FigureCanvas)
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 from datetime import datetime
+plt.rc('font', family='Malgun Gothic') #한글 깨짐 방지
+plt.rc('axes', unicode_minus=False) #한글 깨짐 방지
 
 #to import UI path
 sys.path.append("./UI") # insert your path
@@ -41,7 +44,7 @@ class MainWidget(QMainWindow):
     TODO: 
     1. 메인 윈도우에서 데이터타입 바꾸기 구현 필요
     2. 식별자 구분이 잘 안되므로 수정 필요
-    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값, 교환 완성 // 마스킹 삭제 범주화 코딩중
+    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값, 교환 완성,마스킹, 삭제 //범주화 코딩중
      3-1. 통계값에서 datetime, string 이상치 ??
      3-2. 통계값: 회귀분석 보류, Part(group)은 여러번 적용되도록 수정필요, int형 데이터만 처리 가능
      3-3. 교환에서 외부 파일 import 기능 없음(필요시 코딩)
@@ -56,18 +59,19 @@ class MainWidget(QMainWindow):
     6. run 함수 구현 필요: run 누르면 tab2의 결과창 보여주기 -> OK
     7. compare graph 및 지표 결과 구현 필요
      7-2. 재식별 리스크 그래프 필요 -> ok 
-     7-1. 데이터 손실 및 유용성 그래프 필요 ---------------------------------------------------------------->먼저하기(1)
-    8. 라디오 버튼 밑에 식별자, 비식별자, 민감정보, 일반정보 보여주기 ---------------------------------------->먼저하기(3)
+     7-1. 데이터 손실 및 유용성 그래프 필요 -> ok
+     7-2. before, after 데이터 상관관계 변화도 나중에 구현 예정
+    8. 라디오 버튼 밑에 식별자, 비식별자, 민감정보, 일반정보 보여주기 -> ok
     9. 비식별 적용 함수 테이블에 보여주기 ------------------------------------------------------------------>먼저하기(2)
+    10. MainWindow 계속 보이게 바꾸기
 
     기타: 
     - statusbar에 컬럼 및 행 정보 보여주기  
-    - SaveFileDialog 함수 수정 필요(tab2의 output 데이터를 파일로 저장하도록)
+    - SaveFileDialog 함수 수정 필요(tab2의 output 데이터를 파일로 저장하도록) ->Final_Output or tab2_output으로 저장, ok
     - 사용하는 data type: int, string, datetime
     - newwindow 사이즈 fix
-    - tab1의 data classification 구현 or 다른 기능으로 수정 
-    - 데이터 타입, 데이터가 없어서 생기는 에러 예외처리 해주기;;
-    - 비식별 클래스에 있는 전역변수 self로 바꿔주기
+    - 데이터 타입, 데이터가 없어서 생기는 에러 예외처리 해주기 **은근 많음**
+    - NonIdentifierMethod 클래스에 있는 전역변수 self로 바꿔주기
     ** 그 외 TODO 추가해주세요. **
     """
     
@@ -76,6 +80,8 @@ class MainWidget(QMainWindow):
         self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: 기타. change dynamic text
         self.ui.show()        
+
+        self.InitializingGraphUI() #CorrelationGraph of tab2 초기화 
 
         self.ui.INPUTtable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers) #editable false
         self.ui.INPUTtable.cellClicked.connect(self._cellclicked) # cell 클릭 시 식별자, 준식별자 등 radio button checked 
@@ -87,6 +93,7 @@ class MainWidget(QMainWindow):
         self.ui.actionNonIdentifier.triggered.connect(self.NonIdentifierMethod) # TODO: 3. 비식별화 함수 추가중
 
         #식별자 radio button change event
+        self.id_dict = {}
         self.ui.ID.clicked.connect(self.radioButtonClicked) #식별자
         self.ui.QD.clicked.connect(self.radioButtonClicked) #준식별자
         self.ui.SA.clicked.connect(self.radioButtonClicked) #민감정보
@@ -95,6 +102,7 @@ class MainWidget(QMainWindow):
         #privacy model button event
         self.ui.privacyAdd.clicked.connect(self.PrivacyAdd)
         self.ui.privacyDelete.clicked.connect(self.PrivacyDelete)
+
         
 
     def initUI(self):
@@ -103,7 +111,7 @@ class MainWidget(QMainWindow):
         self.show()
 
     def ImportData(self):
-        self.ui.hide()
+        #self.ui.hide()
         self.newWindow = ImportDataWindow(self)
 
     def NonIdentifierMethod(self):
@@ -122,33 +130,80 @@ class MainWidget(QMainWindow):
             if(self.ui.typeTable.item(col,2).text() == '식별자'):
                 print("식별자")
                 self.ui.ID.setChecked(True)
+                self.setTypeListWidget(self.id_dict['식별자'], col)
             elif(self.ui.typeTable.item(col,2).text() == '준식별자'):
                 print("준식별자")
                 self.ui.QD.setChecked(True)
+                self.setTypeListWidget(self.id_dict['준식별자'], col)
             elif(self.ui.typeTable.item(col,2).text() == '민감정보'):
                 print("민감정보")
                 self.ui.SA.setChecked(True)
+                self.setTypeListWidget(self.id_dict['민감정보'], col)
             elif(self.ui.typeTable.item(col,2).text() == '일반정보'):
                 print("일반정보")
                 self.ui.GI.setChecked(True)
+                self.setTypeListWidget(self.id_dict['일반정보'], col)
+
+    def setTables(self, types, combo_id):
+        rownum = len(tab1_input.index) # get row count
+        colnum = len(tab1_input.columns)
+        self.ui.INPUTtable.setRowCount(rownum) #set row number
+        self.ui.INPUTtable.setColumnCount(colnum) #set column number
+        self.ui.INPUTtable.setHorizontalHeaderLabels(tab1_input.columns.tolist())
+
+        for k in range(colnum):
+            for l in range(rownum):
+                self.ui.INPUTtable.setItem(l,k,QTableWidgetItem(str(tab1_input[tab1_input.columns[k]][l])))
+                
+        self.ui.INPUTtable.resizeColumnsToContents() 
+        self.ui.INPUTtable.resizeRowsToContents() 
+        
+        #tab1의 data type 테이블 rendering
+        self.ui.typeTable.setRowCount(colnum) # 보여줄 컬럼 개수만큼 행 만들기
+        for rowindex in range(colnum): #컬럼 개수만큼 행에 값 넣기         
+            self.ui.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(tab1_input.columns[rowindex]))) #setitem 컬럼이름 
+            self.ui.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(types[rowindex]))) #setitem 데이터타입 입력
+            self.ui.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
+
 
     def radioButtonClicked(self):
         col = self.ui.INPUTtable.currentColumn() #get Selected Column number
         if self.ui.INPUTtable.item(col,0) is None: # if value is null, do nothing
             print('cell has nothing(radioButtonClicked)')
         else: #if not null, radio button check
+            self.removeDictionaryValue(col)
             if self.ui.ID.isChecked(): #식별자
+                self.id_dict['식별자'].append(tab1_input.columns[col])
+                self.setTypeListWidget(self.id_dict['식별자'], col)
                 self.ui.typeTable.setItem(col, 2, QTableWidgetItem(str("식별자")))
                 print("changed to 식별자")
             elif self.ui.QD.isChecked(): #준식별자
+                self.id_dict['준식별자'].append(tab1_input.columns[col]) 
+                self.setTypeListWidget(self.id_dict['준식별자'], col)           
                 self.ui.typeTable.setItem(col, 2, QTableWidgetItem(str("준식별자")))
                 print("changed to 준식별자")
             elif self.ui.SA.isChecked(): #민감정보
+                self.id_dict['민감정보'].append(tab1_input.columns[col])
+                self.setTypeListWidget(self.id_dict['민감정보'], col)
                 self.ui.typeTable.setItem(col, 2, QTableWidgetItem(str("민감정보")))
                 print("changed to 민감정보")
             elif self.ui.GI.isChecked(): #일반정보
+                self.id_dict['일반정보'].append(tab1_input.columns[col])
+                self.setTypeListWidget(self.id_dict['일반정보'], col)
                 self.ui.typeTable.setItem(col, 2, QTableWidgetItem(str("일반정보")))
                 print("changed to 일반정보")
+                
+    def removeDictionaryValue(self, col):
+        old_id = self.ui.typeTable.item(col,2).text() 
+        print(self.id_dict[old_id])
+        self.id_dict[old_id].remove(tab1_input.columns[col])
+        #for i in self.id_dict['식별자']:
+        #    self.ui.typeListWidget.addItem(self.id_dict['식별자'][0])
+
+    def setTypeListWidget(self, data, col): #radio button과 같은 속성만 보여주기
+        self.ui.typeListWidget.clear()
+        for i in data:
+            self.ui.typeListWidget.addItem(i)
 
     def PrivacyAdd(self): #add 버튼 누르면 프라이버시 모델 설정 가능
         self.ui.privacyTable.insertRow(self.ui.privacyTable.rowCount())
@@ -219,9 +274,26 @@ class MainWidget(QMainWindow):
             for j in range(rownum): #rendering data (outputtable of Tab2)
                 self.ui.OUTPUTDATAtable.setItem(j,i,QTableWidgetItem(str(Final_Output[Final_Output.columns[i]][j])))
         
-        
+        self.setGraph()
+        self.ui.tabWidget.setCurrentIndex(1) #탭 전환
+
+
+    def InitializingGraphUI(self):
+        self.before, _ = plt.subplots(figsize=(5,5)) #original code: self.before, self.ax1
+        self.before_canvas = FigureCanvas(self.before) # figure - canvas 연동
+        self.ui.inputGraph1.addWidget(self.before_canvas) #layout에 figure 삽입
+        self.before_canvas.draw() 
+
+        self.after, _ = plt.subplots(figsize=(5,5))
+        self.after_canvas = FigureCanvas(self.after) # figure - canvas 연동
+        self.ui.outputGraph1.addWidget(self.after_canvas) #layout에 figure 삽입
+        self.after_canvas.draw() 
+
+
+    def setGraph(self):
         #set graph
         graphcount = tab1_input.copy()
+        self.correlation_beforegraph(len(graphcount.columns), tab1_input)
         self.max = 0
         list = []
         lenth = self.ui.typeTable.rowCount() #컬럼개수
@@ -232,9 +304,11 @@ class MainWidget(QMainWindow):
         graphcount = graphcount.groupby(list).count()
         graphcount = 1 / graphcount
         print(graphcount[graphcount.columns[0]])
-        self.show_beforegraph(self.ui.inputGraph, graphcount[graphcount.columns[0]])
+        self.risk_beforegraph(self.ui.inputGraph, graphcount[graphcount.columns[0]])
+        
 
         graphcount = Final_Output.copy()
+        self.correlation_aftergraph(len(graphcount.columns), graphcount)
         list = []
         lenth = self.ui.typeTable.rowCount() #컬럼개수
         for i in range(lenth): #준식별자 컬럼만 리스트에 삽입
@@ -244,22 +318,45 @@ class MainWidget(QMainWindow):
         graphcount = graphcount.groupby(list).count()
         graphcount = 1 / graphcount
         print(graphcount[graphcount.columns[0]])
-        self.show_aftergraph(self.ui.outputGraph, graphcount[graphcount.columns[0]], self.max.max())
+        self.risk_aftergraph(self.ui.outputGraph, graphcount[graphcount.columns[0]], self.max.max())
+        
 
-        self.ui.tabWidget.setCurrentIndex(1) #탭 전환
+    def correlation_beforegraph(self, columns, datas):
+        self.ui.inputGraph1.removeWidget(self.before_canvas)
+        self.before, _ = plt.subplots(figsize=(columns,columns))
+        self.before_canvas = FigureCanvas(self.before) # figure - canvas 연동
+        self.ui.inputGraph1.addWidget(self.before_canvas) #layout에 figure 삽입
+        
+        corr = datas.corr()
+        colormap = sns.diverging_palette(220, 10, as_cmap=True)
+        sns.heatmap(corr, cmap=colormap, annot=True, fmt=".2f")
 
-    def show_beforegraph(self, widget, data):
-        """ reference: https://yapayzekalabs.blogspot.com/2018/11/pyqt5-gui-qt-designer-matplotlib.html
-        tab2 그래프 그리기"""
+        self.before_canvas.draw() 
+
+
+    def correlation_aftergraph(self, columns, datas):
+        self.ui.outputGraph1.removeWidget(self.after_canvas)
+        self.after, _ = plt.subplots(figsize=(columns,columns))
+        self.after_canvas = FigureCanvas(self.after) # figure - canvas 연동
+        self.ui.outputGraph1.addWidget(self.after_canvas) #layout에 figure 삽입
+        
+        corr = datas.corr()
+        colormap = sns.diverging_palette(220, 10, as_cmap=True)
+        sns.heatmap(corr, cmap=colormap, annot=True, fmt=".2f")
+
+        self.after_canvas.draw() 
+
+
+    def risk_beforegraph(self, widget, data):
+        """ reference: https://yapayzekalabs.blogspot.com/2018/11/pyqt5-gui-qt-designer-matplotlib.html tab2의 리스크 그래프 그리기"""
         widget.canvas.axes.clear()
         widget.canvas.axes.hist(data)
         widget.canvas.axes.set_title('Risk of Re-Identification')
         self.max, x, _ = widget.canvas.axes.hist(data)
         widget.canvas.draw()
     
-    def show_aftergraph(self, widget, data, max):
-        """ reference: https://yapayzekalabs.blogspot.com/2018/11/pyqt5-gui-qt-designer-matplotlib.html
-        tab2 그래프 그리기"""
+    def risk_aftergraph(self, widget, data, max):
+        """ reference: https://yapayzekalabs.blogspot.com/2018/11/pyqt5-gui-qt-designer-matplotlib.html tab2의 리스크 그래프 그리기"""
         widget.canvas.axes.clear()
         widget.canvas.axes.hist(data)
         widget.canvas.axes.set_title('Risk of Re-Identification')
@@ -319,14 +416,19 @@ class MainWidget(QMainWindow):
 #TODO: 함수 구현하기
 
 
-    def SaveFileDialog(self): #TODO: 기타. 함수 수정 필요, tab2_output.copy() 수정하기
+    def SaveFileDialog(self):
+        global Final_Output, tab2_output
         options = QFileDialog.Options()
         fileName, _ = QFileDialog.getSaveFileName(self,"QFileDialog.getOpenFileName()", "",
                                                   "All Files (*);;Python Files (*.py);; CSV Files(*.csv);; Excel Files(*.xlsx)", 
                                                   "CSV Files(*.csv)",
                                                   options=options)
         if fileName:
-            output = tab2_output.copy()
+            try:
+                output = Final_Output.copy()
+            except:
+                output = tab2_output.copy()
+
             print(output)
             output.to_csv(fileName, encoding='ms949', index=False)  
 
@@ -360,7 +462,7 @@ class ImportDataWindow(QMainWindow):
             inputdata = pd.read_csv(fileName, sep=",",encoding='euc-kr') #read file
             path = os.getcwd() + fileName
             self.ui.filePath.append(path) #show file path
-            print(inputdata)
+            #print(inputdata)
 
             global tab1_input, tab2_output #need to define again 
             tab1_input = inputdata.copy() #save data in file, 파일에 있는 데이터를 변수에 저장 
@@ -393,7 +495,6 @@ class ModifyData(QMainWindow):
         super(ModifyData, self).__init__(parent)
         self.ui = uic.loadUi("./UI/ModifyData.ui") #insert your UI path
         self.ui.show()
-        
         global tab1_input
         
         HorizontalHeader = ["DA","NAME","SAMPLE","EXPECTED","FORMAT","식별자", "결측치비율", "결측치처리"]
@@ -484,7 +585,7 @@ class ModifyData(QMainWindow):
         global tab1_input, tab2_output
         #checked columns
         checked_number = [] # checkbox index
-        uncheced_number = []
+        unchecked_number = []
         check_columns = []  # 체크된 컬럼들
         combo_id = []
         types = []
@@ -496,20 +597,20 @@ class ModifyData(QMainWindow):
                     check_columns.append(self.ui.dataTypeChange.item(i,1).text())
                     combo_id.append(self.ui.dataTypeChange.cellWidget(i,5).currentText()) #식별자 combo box
                     if(self.ui.dataTypeChange.cellWidget(i,4).currentText() == 'SAME'): #같은경우 3 번째 컬럼 값으로 데이터타입 주기
-                        print(self.ui.dataTypeChange.item(i,3).text())
+                        #print(self.ui.dataTypeChange.item(i,3).text())
                         types.append(self.ui.dataTypeChange.item(i,3).text())
                     else:#데이터타입 수정한경우 4 번째 있는 컬럼으로 데이터타입 주기
                         types.append(self.ui.dataTypeChange.cellWidget(i,4).currentText())
 
                     #결측치 처리
                     tab1_input = self.MissingValueProcess(tab1_input, i)
-                    print(tab1_input)
+                    #print(tab1_input)
                     
                 else:
-                    uncheced_number.append(i)
+                    unchecked_number.append(i)
         
-        uncheced_number.reverse() # 리스트 거꾸로 넣어서 index error 제거, 
-        for i in uncheced_number:
+        unchecked_number.reverse() # 리스트 거꾸로 넣어서 index error 제거, unchecked column remove
+        for i in unchecked_number:
             tab1_input = tab1_input.drop(tab1_input.columns[i], axis=1) #사용자가 선택한 컬럼만 tab1_input에 저장
             tab2_output = tab2_output.drop(tab2_output.columns[i], axis=1) 
 
@@ -518,29 +619,48 @@ class ModifyData(QMainWindow):
         #print(combo_id) # just 확인용
         #print(types)   # just 확인용
 
-        self.mainUI = MainWidget() #call main UI class
+        #checked columns의 식별자 딕셔너리 데이터 생성
+        ex.id_dict.clear()
+        ex.id_dict['식별자'] = []
+        ex.id_dict['준식별자'] = []
+        ex.id_dict['민감정보'] = []
+        ex.id_dict['일반정보'] = []
+        for i in checked_number:
+            mycom = self.ui.dataTypeChange.cellWidget(i,5)
+            #print(mycom.currentText())
+            if mycom.currentText() == '식별자':
+                ex.id_dict['식별자'].append(self.ui.dataTypeChange.item(i,1).text())
+            elif mycom.currentText() == '준식별자':
+                ex.id_dict['준식별자'].append(self.ui.dataTypeChange.item(i,1).text())
+            elif mycom.currentText() == '민감정보':
+                ex.id_dict['민감정보'].append(self.ui.dataTypeChange.item(i,1).text())
+            else:
+                ex.id_dict['일반정보'].append(self.ui.dataTypeChange.item(i,1).text())
+        
+        ex.setTables(types, combo_id) #INPUTtable and typeTable rendering
+        """self.mainUI = ex.ui #call main UI variable
 
         #tab1의 input table rendering
         rownum = len(tab1_input.index) # get row count
         colnum = len(check_columns)
-        self.mainUI.ui.INPUTtable.setRowCount(rownum) #set row number
-        self.mainUI.ui.INPUTtable.setColumnCount(colnum) #set column number
-        self.mainUI.ui.INPUTtable.setHorizontalHeaderLabels(check_columns)
+        self.mainUI.INPUTtable.setRowCount(rownum) #set row number
+        self.mainUI.INPUTtable.setColumnCount(colnum) #set column number
+        self.mainUI.INPUTtable.setHorizontalHeaderLabels(check_columns)
 
         for k in range(colnum):
             for l in range(rownum):
-                self.mainUI.ui.INPUTtable.setItem(l,k,QTableWidgetItem(str(tab1_input[check_columns[k]][l])))
+                self.mainUI.INPUTtable.setItem(l,k,QTableWidgetItem(str(tab1_input[check_columns[k]][l])))
                 
-        self.mainUI.ui.INPUTtable.resizeColumnsToContents() 
-        self.mainUI.ui.INPUTtable.resizeRowsToContents() 
+        self.mainUI.INPUTtable.resizeColumnsToContents() 
+        self.mainUI.INPUTtable.resizeRowsToContents() 
         
         #tab1의 data type 테이블 rendering
-        self.mainUI.ui.typeTable.setRowCount(colnum) # 보여줄 컬럼 개수만큼 행 만들기
+        self.mainUI.typeTable.setRowCount(colnum) # 보여줄 컬럼 개수만큼 행 만들기
         for rowindex in range(colnum): #컬럼 개수만큼 행에 값 넣기         
-            self.mainUI.ui.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(check_columns[rowindex]))) #setitem 컬럼이름 
-            self.mainUI.ui.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(types[rowindex]))) #setitem 데이터타입 입력
-            self.mainUI.ui.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
-
+            self.mainUI.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(check_columns[rowindex]))) #setitem 컬럼이름 
+            self.mainUI.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(types[rowindex]))) #setitem 데이터타입 입력
+            self.mainUI.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
+        """
         self.ui.hide()
 
     """결측치 처리 함수"""
@@ -566,6 +686,7 @@ class ModifyData(QMainWindow):
 
     def _cellclicked(self, row, col):
         print("_cellclicked... ", row, col)
+       
         
 class MyCheckBox(QCheckBox): 
     def __init__(self, item): 
@@ -604,7 +725,7 @@ class MyQTableWidgetItemCheckBox(QTableWidgetItem):
 #nonidentifierMethod window, 수정중
 class NonIdentifierMethod(QMainWindow):
     global tab1_input, tab2_output
-    global before, after, SelectColumn, SelectColumnName, rownum, colnum
+    global before, after, SelectColumn, SelectColumnName, rownum, colnum #self로 바꾸기
 
     def __init__(self, parent=None):
         super(NonIdentifierMethod, self).__init__(parent)
@@ -680,18 +801,21 @@ class NonIdentifierMethod(QMainWindow):
 
         elif(self.ui.Method3.isChecked()):
             print("범주화 메소드") #insert ujin's code
+        
         elif(self.ui.Method4.isChecked()):
-            print("마스킹 및 삭제") #insert ujin's code
             self.ui = uic.loadUi("./UI/maskingData.ui") #insert your UI path
             self.ui.show()
 
+            self.m_level = self.ui.maskingText.textChanged.connect(self.usedbyMasking)
+            self.m_index = self.ui.m_comboBox.currentIndexChanged.connect(self.usedbyMasking)
+
             before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
-            #after = before.copy()
             rownum = len(before.index) # get row count
             colnum = len(before.columns) # get column count
 
             self.ui.nextButton.clicked.connect(self.Masking)
             self.ui.cancelButton.clicked.connect(self.ui.hide)
+            self.ui.backButton.clicked.connect(self.InitUI)
 
         elif(self.ui.Method5.isChecked()): # 통계값 처리 UI 및 박스 그래프 보여주기
             self.ui = uic.loadUi("./UI/Aggregation.ui") #insert your UI path
@@ -746,6 +870,18 @@ class NonIdentifierMethod(QMainWindow):
 
     #radio button event end 
 
+    def usedbyMasking(self):
+        self.m_level = self.ui.maskingText.toPlainText()
+        self.m_index = self.ui.m_comboBox.currentIndex()
+        print(self.m_index)
+        try:
+            self.m_level = int(self.m_level)
+            if(self.m_level<1):
+                self.m_level/0
+        except Exception:
+            QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
+        pass
+
     #data swap start
     def Swap(self):      
         """swapTable의 after 값으로 바꾸기"""
@@ -788,10 +924,9 @@ class NonIdentifierMethod(QMainWindow):
         self.ui = uic.loadUi("./UI/maskingData_review.ui") #insert your UI path
         self.ui.show()
         self.ui.maskingLevel.setRowCount(rownum) #Set Column Count s    
-
-        level1 = before.copy()
-        level2 = level1.copy()
-        level3 = level2.copy()
+        
+        global before, after
+        after = before.copy()
 
         before_uniq = before[before.columns[0]].unique()
         
@@ -805,7 +940,8 @@ class NonIdentifierMethod(QMainWindow):
             if max_len < len(str(before[before.columns[0]][j])):
                 max_len = len(str(before[before.columns[0]][j]))
 
-        self.ui.maskingLevel.setColumnCount(max_len+1)
+        self.ui.maskingLevel.setColumnCount(2)
+        self.ui.maskingLevel.setHorizontalHeaderLabels(['original', 'masking'])
 
         for j in range(rownum): #rendering data (inputtable of Tab1)
             for u in range(len(before_uniq)):
@@ -814,19 +950,19 @@ class NonIdentifierMethod(QMainWindow):
                 uniq_slice.append(list(uniq[u])) # 한글자씩 추출하기 위해 list 사용
                 uniq_len.append(len(uniq[u])) # 마스킹할 데이터의 최대 길이 구하는 것
 
-                #for n in range(uniq_len):
-                if level1[level1.columns[0]][j] == uniq[u]:
-                    level1[level1.columns[0]][j] = str(before[before.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-1], "*")
-                    level2[level2.columns[0]][j] = str(level1[level1.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-2], "*")
-                    level3[level3.columns[0]][j] = str(level2[level2.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-3], "*")
+                for l in range(1,self.m_level+1):
+                    if before[before.columns[0]][j] == uniq[u]:
+                        if(self.m_index == 0): # * masking
+                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+                        elif(self.m_index == 1): # 0 masking
+                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "0")
+                        elif(self.m_index == 2): # remove
+                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], " ")
 
             self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((level1[level1.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,2,QTableWidgetItem((level2[level2.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,3,QTableWidgetItem((level3[level3.columns[0]][j])))
+            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((after[after.columns[0]][j])))
         
-        
-
+        #self.ui.backButton.clicked.connect(self.ui.hide)
         self.ui.finishButton.clicked.connect(self.finishButton)
         self.ui.cancelButton.clicked.connect(self.ui.hide)
 
