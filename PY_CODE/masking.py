@@ -31,6 +31,13 @@ global tab2_output
 
 fileName = ""
 
+"""
+[범주화]
+  - 이항변수화 : '0','1'의 값만 가지는 가변수 만드는 것
+  - 이산형화 : 연속형 변수를 2개 이상의 범주를 가지는 변수로 만들어주는 것
+      np.digitize(data, bin) ; np.where(condition, factor1, factor2,...)
+"""
+
 class MainWidget(QMainWindow):
     
     def __init__(self):
@@ -42,8 +49,9 @@ class MainWidget(QMainWindow):
 
         self.ui.INPUTtable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.ui.actionimport_data.triggered.connect(self.ImportData) #importData from csv
-        self.ui.actionNonIdentifier.triggered.connect(self.MaskingData) # not complete 수정중
-
+        #self.ui.actionNonIdentifier.triggered.connect(self.MaskingData) # not complete 수정중
+        self.ui.actionNonIdentifier.triggered.connect(self.CategoricalData)
+    
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -52,15 +60,22 @@ class MainWidget(QMainWindow):
     def ImportData(self):
         self.ui.hide()
         self.newWindow = ImportDataWindow(self)
-
+    
+    """
     def MaskingData(self):
         col = self.ui.INPUTtable.currentColumn() #get Selected Column number
         if self.ui.INPUTtable.item(col,0) is None: # if value is null, do nothing
             print('cell has nothing (NonIdentifierMethod)')
         else: #if not null, radio button check
             self.newWindow = MaskingDataMethod(self)
+    """
 
-
+    def CategoricalData(self):
+        col = self.ui.INPUTtable.currentColumn() #get Selected Column number
+        if self.ui.INPUTtable.item(col,0) is None: # if value is null, do nothing
+            print('cell has nothing (NonIdentifierMethod)')
+        else: #if not null, radio button check
+            self.newWindow = CategoricalDataMethod(self)
 
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -72,7 +87,7 @@ class ImportDataWindow(QMainWindow):
       
     def ImportDataButton(self):
 
-        inputdata = pd.read_csv('C:\\Users\\san\\Desktop\\D_D\\arxTest(1).csv', sep=",",encoding='euc-kr') #read file
+        inputdata = pd.read_csv('./DATASET/data2.csv', sep=",",encoding='euc-kr') #read file
         print(inputdata)
 
         global tab1_input #need to define again 
@@ -195,12 +210,12 @@ class ModifyData(QMainWindow):
                         types.append(self.ui.dataTypeChange.cellWidget(i,4).currentText())
                 else:
                     uncheced_number.append(i)
-
+        """
         uncheced_number.reverse() # 리스트 거꾸로 넣어서 index error 제거, 
         for i in uncheced_number:
             tab1_input = tab1_input.drop(tab1_input.columns[i], axis=1) #사용자가 선택한 컬럼만 tab1_input에 저장
             tab2_output = tab2_output.drop(tab2_output.columns[i], axis=1) 
-            
+        """
 
         print(checked_number) # just 확인용
         print(check_columns) # just 확인용    
@@ -277,8 +292,7 @@ class MyQTableWidgetItemCheckBox(QTableWidgetItem):
         # print("my setdata ", value) 
         self.setData(Qt.UserRole, value) 
 
-
-
+"""
 class MaskingDataMethod(QMainWindow):
     global tab1_input, tab2_output
     global before, after, SelectColumn, SelectColumnName, rownum, colnum
@@ -295,16 +309,9 @@ class MaskingDataMethod(QMainWindow):
         SelectColumn = self.parent().ui.INPUTtable.currentColumn() #get Selected Column number
         SelectColumnName = self.parent().ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
         
-        self.level = self.ui.maskingText.toPlainText()
-        """
-        try:
-            self.level = int(self.level)
-            if(self.level<1):
-                self.level/0
-        except Exception:
-            QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
-        pass
-        """
+        self.m_index = self.ui.m_comboBox.currentIndexChanged.connect(self.usedbyMasking)
+
+        self.level = self.ui.maskingText.textChanged.connect(self.usedbyMasking)
 
         before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
         #after = before.copy()
@@ -321,6 +328,22 @@ class MaskingDataMethod(QMainWindow):
         
         self.ui.nextButton.clicked.connect(self.Masking)
         self.ui.cancelButton.clicked.connect(self.ui.hide)
+
+    def usedbyMasking(self):
+        self.m_index = self.ui.m_comboBox.currentIndex()
+
+        self.level = self.ui.maskingText.toPlainText()
+        print("first")
+        print(type(self.level))
+        try:
+            self.level = int(self.level)
+            print("Second")
+            print(type(self.level))
+            if(self.level<1):
+                self.level/0
+        except Exception:
+            QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
+        pass
         
     def Masking(self):
         self.ui = uic.loadUi("./UI/maskingData_review.ui") #insert your UI path
@@ -331,8 +354,6 @@ class MaskingDataMethod(QMainWindow):
         global before, after
     
         after = before.copy()
-        #level2 = level1.copy()
-        #level3 = level2.copy()
 
         before_uniq = before[before.columns[0]].unique()
         print(before_uniq)
@@ -350,10 +371,12 @@ class MaskingDataMethod(QMainWindow):
             #self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
             if max_len < len(str(before[before.columns[0]][j])):
                 max_len = len(str(before[before.columns[0]][j]))
-            """
-            for i in range(1,max_len+1):
-                maskingList = {'level_' + str(i) : []}
-            """
+           
+        self.ui.maskingLevel.setColumnCount(2)
+
+        print("****")
+        print(self.m_index)
+        print(type(self.m_index))
 
         for j in range(rownum): #rendering data (inputtable of Tab1)
             for u in range(len(before_uniq)):
@@ -365,19 +388,144 @@ class MaskingDataMethod(QMainWindow):
 
                 for l in range(1,self.level+1):
                     if before[before.columns[0]][j] == uniq[u]:
-                        after[after.columns[0]][j] = str(before[before.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
-                        #level2[level2.columns[0]][j] = str(level1[level1.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-2], "*")
-                        #level3[level3.columns[0]][j] = str(level2[level2.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-3], "*")
+                        #after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+                        if(self.m_index == 0): # * masking
+                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+                        elif(self.m_index == 1): # 0 masking
+                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "0")
+                        elif(self.m_index == 2): # remove
+                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], " ")
 
+                        
             self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
             self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((after[after.columns[0]][j])))
-            #self.ui.maskingLevel.setItem(j,2,QTableWidgetItem((level2[level2.columns[0]][j])))
-            #self.ui.maskingLevel.setItem(j,3,QTableWidgetItem((level3[level3.columns[0]][j])))
-        
+          
         #self.ui.cancelButton.clicked.connect(self.MaskingDataMethod)
+"""
 
+class CategoricalDataMethod(QMainWindow):
+    global tab1_input, tab2_output
+    global before, after, SelectColumn, SelectColumnName, rownum, colnum
+
+    def __init__(self, parent=None):
+        super(CategoricalDataMethod, self).__init__(parent)
+        self.InitUI()
     
+    def InitUI(self):
+        self.ui = uic.loadUi("./UI/CategoricalData.ui") #insert your UI path
+        self.ui.show()
 
+        global before, after, SelectColumn, SelectColumnName, rownum, colnum
+        SelectColumn = self.parent().ui.INPUTtable.currentColumn() #get Selected Column number
+        SelectColumnName = self.parent().ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
+        
+        before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
+        rownum = len(before.index) # get row count
+        colnum = len(before.columns) # get column count
+        
+        self.ui.nextButton.clicked.connect(self.Categorical_next)
+        self.ui.cancelButton.clicked.connect(self.ui.hide)
+
+    def Categorical_next(self):
+        global before, after
+        
+        if(self.ui.ordering.isChecked()):
+            self.ui = uic.loadUi("./UI/ordering_categorical.ui")
+            self.ui.show()
+        
+            self.original_uniq = before[before.columns[0]].unique()
+            self.ui.original.setRowCount(len(self.original_uniq))
+            self.ui.original.setHorizontalHeaderLabels(['values'])
+            print(type(self.original_uniq))
+            print("first element")
+            print(self.original_uniq[0])
+
+            for v in range(len(self.original_uniq)):
+                self.ui.original.setItem(v,0,QTableWidgetItem(str(self.original_uniq[v])))
+            
+            self.ui.runButton.clicked.connect(self.Ordering_Categorical)
+
+        elif(self.ui.intervals.isChecked()):
+            self.ui = uic.loadUi("./UI/intervals_categorical.ui") #insert your UI path
+            self.ui.show()
+
+            self.ui.original.setRowCount(rownum) #Set Column Count s 
+            self.ui.original.setHorizontalHeaderLabels(['original'])
+
+            for j in range(rownum): #rendering data (inputtable of Tab1)
+                self.ui.original.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
+
+            self.ui.runButton.clicked.connect(self.Intervals_Categorical)
+    
+            
+    def Intervals_Categorical(self):
+        after = before.copy()
+
+        self.ui.categorical.setRowCount(rownum) #Set Column Count s 
+        self.ui.categorical.setHorizontalHeaderLabels(['categorical'])
+
+        minValue = self.ui.minText.toPlainText()
+        maxValue = self.ui.maxText.toPlainText()
+        interValue = self.ui.interText.toPlainText()
+
+        try:
+            minValue = int(minValue)
+            maxValue = int(maxValue)
+            interValue = int(interValue)
+            if(minValue<1):
+                minValue/0
+            elif(maxValue<1):
+                maxValue/0
+            elif(interValue<1):
+                interValue/0
+        except Exception:
+            QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
+        pass
+            
+        for j in range(rownum):
+            if before[before.columns[0]][j] < minValue:
+                after[after.columns[0]][j] = "<" + str(minValue)
+                self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
+            elif before[before.columns[0]][j] > maxValue:
+                after[after.columns[0]][j] = ">" + str(maxValue)
+                self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
+            else:
+                ii = int((maxValue-minValue)/interValue)
+                for i in range(ii):
+                    if before[before.columns[0]][j]-minValue >= i*interValue and before[before.columns[0]][j]-minValue < (i+1)*interValue:
+                        after[after.columns[0]][j] = "[" + str(minValue+i*interValue) + "," + str(minValue+(i+1)*interValue) + ")"
+                        self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
+
+    def Ordering_Categorical(self):
+        after = before.copy()
+
+        self.ui.categorical.setHorizontalHeaderLabels(['categorical'])
+
+        orderValue = self.ui.orderText.toPlainText()
+        UsrChckVal = orderValue.split(',')
+        UsrChckVal = [int (i) for i in UsrChckVal] #배열 원소 int형으로 변환
+        print(UsrChckVal[0])
+        print(type(UsrChckVal[0]))
+        
+        #groupEle = []
+
+        for i in range(len(self.original_uniq)):
+            after.loc[after[SelectColumnName] == str(self.original_uniq[i]), SelectColumnName] = self.ui.original.item(i,1).text()
+
+        for j in range(rownum):
+            self.ui.categorical.setItem(j,1,QTableWidgetItem(str(after[after.columns[0]][j])))
+            #after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+9*pow(10, number-1))//pow(10, number))*pow(10, number) # change number, up
+        """
+        for c in range((len(UsrChckVal))):
+            UsrElement = UsrChckVal[c]
+            UsrElement = UsrElement-1
+            groupEle.append(self.original_uniq[UsrElement])
+            print(groupEle)
+        """  
+
+
+
+                    
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MainWidget()
