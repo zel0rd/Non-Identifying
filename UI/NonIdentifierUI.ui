@@ -56,7 +56,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="AnalysisTab">
        <property name="sizePolicy">
@@ -490,16 +490,19 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string> Data classification</string>
+             <string>Non-Identifier Method</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
              <item row="0" column="0">
-              <widget class="QTableWidget" name="DYPEtable_2">
+              <widget class="QTableWidget" name="methodTable">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="editTriggers">
+                <set>QAbstractItemView::NoEditTriggers</set>
                </property>
                <column>
                 <property name="text">
@@ -508,12 +511,17 @@
                </column>
                <column>
                 <property name="text">
-                 <string>Classification</string>
+                 <string>Method</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>Level</string>
+                 <string>Detail</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>Changed Value</string>
                 </property>
                </column>
               </widget>
@@ -593,6 +601,9 @@
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::NoEditTriggers</set>
                   </property>
                   <property name="rowCount">
                    <number>100</number>
@@ -715,6 +726,9 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::NoEditTriggers</set>
+                  </property>
                   <property name="rowCount">
                    <number>100</number>
                   </property>
@@ -835,7 +849,7 @@
              </widget>
              <widget class="QTabWidget" name="tabWidget_2">
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="CorrelationGraph">
                <attribute name="title">
