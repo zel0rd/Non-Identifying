@@ -33,8 +33,8 @@ import mplwidget
 
 
 global tab1_input # inputtable data from file, 원본 데이터
-global tab2_output ##비식별화 결과 tab2_output에 저장
-global Final_Output
+global tab2_output # 비식별화 결과 tab2_output에 저장
+global Final_Output # Run 함수에서 프라이버시 모델 적용을 위해 필요
 
 
 fileName = ""
@@ -44,13 +44,13 @@ class MainWidget(QMainWindow):
     TODO: 
     1. 메인 윈도우에서 데이터타입 바꾸기 구현 필요
     2. 식별자 구분이 잘 안되므로 수정 필요
-    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값, 교환 완성,마스킹, 삭제 //범주화 코딩중
+    3. 비식별화 함수 추가 필요: shuffle, rounding, 통계값, 교환 완성,마스킹, 삭제 //범주화 코딩중 ----------> ~6/10
      3-1. 통계값에서 datetime, string 이상치 ??
      3-2. 통계값: 회귀분석 보류, Part(group)은 여러번 적용되도록 수정필요, int형 데이터만 처리 가능
-     3-3. 교환에서 외부 파일 import 기능 없음(필요시 코딩)
+     3-3. 교환에서 외부 파일 import 기능 없음(필요시 코딩) -> 확인
     4. 프라이버시 모델 구현하기(익명성, 다양성, 근접성)  ***근접성 구현 필요***
      4-1. 익명성, 다양성 기능 구현 완료 => 익명성은 한번만 사용하도록 수정 필요
-     4-2. 프라이버시 모델 UI 없음
+     4-2. 프라이버시 모델 UI 없음 -> 확인
      4-3. 식별자도 그룹화해야하는 것인지??
     5. 결측치 처리 
      5-1. 처리방법: 평균 중앙값 최빈값 삭제 -> ok
@@ -62,23 +62,25 @@ class MainWidget(QMainWindow):
      7-1. 데이터 손실 및 유용성 그래프 필요 -> ok
      7-2. before, after 데이터 상관관계 변화도 나중에 구현 예정
     8. 라디오 버튼 밑에 식별자, 비식별자, 민감정보, 일반정보 보여주기 -> ok
-    9. 비식별 적용 함수 테이블에 보여주기 ------------------------------------------------------------------>먼저하기(2)
-    10. MainWindow 계속 보이게 바꾸기
+    9. 비식별 적용 함수 테이블에 보여주기 -> ok
+     9-1. 현재 비식별화 기법 최대 1개만 적용 가능
+    10. MainWindow 계속 보이게 바꾸기 -> ok
 
     기타: 
-    - statusbar에 컬럼 및 행 정보 보여주기  
+    - statusbar에 컬럼 및 행 정보 보여주기  -> ok
     - SaveFileDialog 함수 수정 필요(tab2의 output 데이터를 파일로 저장하도록) ->Final_Output or tab2_output으로 저장, ok
-    - 사용하는 data type: int, string, datetime
-    - newwindow 사이즈 fix
+    - 사용하는 data type: int, string, datetime **확인 요청**
+    - newwindow 사이즈 fix 및 통일 ---------------------------------------------------------------------------> ~6/10
     - 데이터 타입, 데이터가 없어서 생기는 에러 예외처리 해주기 **은근 많음**
-    - NonIdentifierMethod 클래스에 있는 전역변수 self로 바꿔주기
+    - NonIdentifierMethod 클래스에 있는 전역변수 self로 바꿔주기 ----------------------------------------------> ~6/10
+    - 몇몇개의 tablewidget NoEditTriggers 설정 필요 (qt designer or 코드로 설정)
     ** 그 외 TODO 추가해주세요. **
     """
     
     def __init__(self):
         super().__init__()
         self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
-        self.ui.statusbar.showMessage("Start program") #statusbar text, TODO: 기타. change dynamic text
+        self.ui.statusbar.showMessage("Start program") #statusbar text
         self.ui.show()        
 
         self.InitializingGraphUI() #CorrelationGraph of tab2 초기화 
@@ -102,13 +104,15 @@ class MainWidget(QMainWindow):
         #privacy model button event
         self.ui.privacyAdd.clicked.connect(self.PrivacyAdd)
         self.ui.privacyDelete.clicked.connect(self.PrivacyDelete)
+        
+        #for methodTableWidget
+        self.methodCol_List = {}
 
         
-
-    def initUI(self):
+    """def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.show()
+        self.show()"""
 
     def ImportData(self):
         #self.ui.hide()
@@ -164,6 +168,8 @@ class MainWidget(QMainWindow):
             self.ui.typeTable.setItem(rowindex, 0, QTableWidgetItem(str(tab1_input.columns[rowindex]))) #setitem 컬럼이름 
             self.ui.typeTable.setItem(rowindex, 1, QTableWidgetItem(str(types[rowindex]))) #setitem 데이터타입 입력
             self.ui.typeTable.setItem(rowindex, 2, QTableWidgetItem(str(combo_id[rowindex]))) #데이터 속성(식별자, 준식별자, 민감정보, 일반정보)
+        
+        self.ui.statusbar.showMessage("Imported Data Column: " + str(colnum) + ", Row: " + str(rownum)) #statusbar text, TODO: 기타. change dynamic text
 
 
     def radioButtonClicked(self):
@@ -487,7 +493,6 @@ class ImportDataWindow(QMainWindow):
 
     def cancelButton(self):
         self.ui.hide()
-        self.mainUI = MainWidget()
         
 
 class ModifyData(QMainWindow):
@@ -637,7 +642,7 @@ class ModifyData(QMainWindow):
             else:
                 ex.id_dict['일반정보'].append(self.ui.dataTypeChange.item(i,1).text())
         
-        ex.setTables(types, combo_id) #INPUTtable and typeTable rendering
+        ex.setTables(types, combo_id) #INPUTtable and typeTable of MainWindow rendering
         """self.mainUI = ex.ui #call main UI variable
 
         #tab1의 input table rendering
@@ -735,9 +740,10 @@ class NonIdentifierMethod(QMainWindow):
         self.ui = uic.loadUi("./UI/SelectNonIdentifierMethod.ui") #insert your UI path
         self.ui.show()
 
-        global before, SelectColumn, SelectColumnName, rownum, colnum
+        global before, SelectColumn, SelectColumnName, rownum, colnum #TODO, self로 바꾸기
         SelectColumn = self.parent().ui.INPUTtable.currentColumn() #get Selected Column number
         SelectColumnName = self.parent().ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
+        
 
         before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
         rownum = len(before.index) # get row count
@@ -775,9 +781,8 @@ class NonIdentifierMethod(QMainWindow):
             for j in range(rownum):
                 self.ui.compareTable.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
 
-            #self.ui.ImportButton.clicked.connect(self.)
             self.ui.runButton.clicked.connect(self.Swap)
-            self.ui.finishButton.clicked.connect(self.finishButton)
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Swap"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -795,14 +800,14 @@ class NonIdentifierMethod(QMainWindow):
                 self.ui.BeforeData.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
 
             self.ui.runButton.clicked.connect(self.Shuffle)
-            self.ui.finishButton.clicked.connect(self.finishButton)
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Shuffle"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
         elif(self.ui.Method3.isChecked()):
             print("범주화 메소드") #insert ujin's code
         
-        elif(self.ui.Method4.isChecked()):
+        elif(self.ui.Method4.isChecked()): # 마스킹 및 삭제
             self.ui = uic.loadUi("./UI/maskingData.ui") #insert your UI path
             self.ui.show()
 
@@ -846,7 +851,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.columns.currentIndexChanged.connect(self.changeGraphCombobox)
 
             self.ui.runButton.clicked.connect(self.Outlier)
-            self.ui.finishButton.clicked.connect(self.finishButton2)
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Aggregation"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -864,7 +869,7 @@ class NonIdentifierMethod(QMainWindow):
                 self.ui.BeforeData.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
 
             self.ui.runButton.clicked.connect(self.Rounding)
-            self.ui.finishButton.clicked.connect(self.finishButton)
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Rounding"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -887,37 +892,46 @@ class NonIdentifierMethod(QMainWindow):
         """swapTable의 after 값으로 바꾸기"""
         global before, after
         after = before.copy()
+        self.swap_list = []
         for i in range(len(self.uniqueIndex)):
             after.loc[after[SelectColumnName]==str(self.uniqueIndex[i]), SelectColumnName] = self.ui.swapTable.item(i,1).text()
+            self.swap_list.append((str(self.uniqueIndex[i]) + "->" + self.ui.swapTable.item(i,1).text()))
 
         for j in range(rownum):
             self.ui.compareTable.setItem(j,1,QTableWidgetItem(str(after[after.columns[0]][j])))
     #data swap end
 
+
+
     #data shuffle(재배열) start          
     def Shuffle(self):
-        number = self.ui.shffleText.toPlainText()
+        self.shufflenumber = self.ui.shffleText.toPlainText()
         try:  #숫자만 입력, 그 외 값은 예외처리
-            number = int(number)
-            if(number<1):
-                number/0
+            self.shufflenumber = int(self.shufflenumber)
+            if(self.shufflenumber<1):
+                self.shufflenumber/0
         except Exception:
             QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
         pass
 
         global before, after
-        after = before[before.columns[0]].values.tolist()
+        after = before.copy()
+        tempList = before[before.columns[0]].values.tolist()
         
-        for i in range(number): #shuffle 
-    	    shuffle(after)
+        for i in range(self.shufflenumber): #shuffle 
+    	    shuffle(tempList)
 
         self.ui.AfterData.setRowCount(rownum) #Set Column Count s
         self.ui.AfterData.setColumnCount(colnum) #Set Column Count       
-        self.ui.AfterData.setHorizontalHeaderLabels(list(before.columns))
+        self.ui.AfterData.setHorizontalHeaderLabels(list(after.columns))
         
         for i in range(rownum): #rendering data
-            self.ui.AfterData.setItem(i,0,QTableWidgetItem(str(after[i])))
+            self.ui.AfterData.setItem(i,0,QTableWidgetItem(str(tempList[i])))
+        after[after.columns[0]] = tempList
+        print(after)
     #Shuffle() end
+
+
 
     def Masking(self):
 
@@ -963,7 +977,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((after[after.columns[0]][j])))
         
         #self.ui.backButton.clicked.connect(self.ui.hide)
-        self.ui.finishButton.clicked.connect(self.finishButton)
+        self.ui.finishButton.clicked.connect(lambda: self.finishButton("Masking"))
         self.ui.cancelButton.clicked.connect(self.ui.hide)
 
     #data Rounding start
@@ -977,22 +991,26 @@ class NonIdentifierMethod(QMainWindow):
         except Exception:
             QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number and bigger than 0')
         pass
-      
+
+        self.RoundingLevel = ""
         index = self.ui.comboBox.currentIndex()
         after = before.copy()
 
         if(index == 0):# 올림
             self.ui.randomLabel.hide()
+            self.RoundingLevel = self.RoundingLevel + str(pow(10, number-1)) + ", 올림"
             for i in range(rownum):
                 after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+9*pow(10, number-1))//pow(10, number))*pow(10, number) # change number, up
                 #after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+9*10^n-1)//10^n)*10^n # change number, up
         elif(index == 1):#내림
             self.ui.randomLabel.hide()
+            self.RoundingLevel = self.RoundingLevel + str(pow(10, number-1)) + ",내림"
             for i in range(rownum):
                 after.loc[i, SelectColumnName] = (after.loc[i, SelectColumnName]//pow(10, number))*pow(10, number) # change number, down
                 #after.loc[i, SelectColumnName] = (after.loc[i, SelectColumnName]//10^n-1)*10^n # change number, down
         elif(index == 2):#5를 기준으로 up down, 반올림
             self.ui.randomLabel.hide()
+            self.RoundingLevel = self.RoundingLevel + str(pow(10, number-1)) + ", 반올림"
             for i in range(rownum):
                 after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+5*pow(10, number-1))//pow(10, number))*pow(10, number) # change number, 4down, 5up
                 #after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+5)//10)*10 # change number, 4down, 5up
@@ -1000,9 +1018,12 @@ class NonIdentifierMethod(QMainWindow):
             randomN = random.randint(0,9)
             self.ui.randomLabel.show() #show random value label
             self.ui.randomLabel.setText("Value: " + str(randomN)) #랜덤 값 보여주기
+            self.RoundingLevel = self.RoundingLevel + str(pow(10, number-1)) + "랜덤(" + str(randomN) + ")"
             for i in range(rownum):
                 after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+(10-randomN))//pow(10, number))*pow(10, number) # change number, 4down, 5up
                 #after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+(10-randomN))//10^n-1)*10^n # change number, 4down, 5up
+            
+        
 
         #rendering aftetable
         self.ui.AfterData.setRowCount(rownum) #Set Column Count     
@@ -1021,6 +1042,7 @@ class NonIdentifierMethod(QMainWindow):
     def Outlier(self):
         global before, after
         after = before.copy() 
+        self.AggregationLevel = ""
 
         #reference: https://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-data-frame/31502974#31502974
         q1 = after[SelectColumnName].quantile(0.25) #calculate q1
@@ -1037,15 +1059,23 @@ class NonIdentifierMethod(QMainWindow):
         if index == 0:
             after = self.AllAggregation(after) #모든 값을 총계나 평균으로 변경            
             self.afterGraph(after[SelectColumnName]) #Rendering after box plot
+            self.AggregationLevel = self.AggregationLevel + "ALL(" + str(self.ui.function.currentText()) + ")"
         elif index == 1:
             after = self.partAggregation(normal, after, fence_low, fence_high)  #이상치 값만 처리
             self.afterGraph(after[SelectColumnName]) #Rendering after box plot
+            self.AggregationLevel = self.AggregationLevel + "PART(" + str(self.ui.function.currentText()) + ")"
         elif index == 2:
             after = tab1_input.copy() 
             after = self.partGroupAggregation(after)
             print(after)
             base = str(self.ui.columns.currentText())
             self.afterGraph(after.groupby(base)[SelectColumnName].apply(list))
+            self.AggregationLevel = (self.AggregationLevel + "GROUP(" + 
+                                    str(self.ui.function.currentText()) + "), " +
+                                    str(self.ui.group.currentText()) +
+                                    " of " +
+                                    str(self.ui.columns.currentText()))
+
             
 
         """ float로 변경될 경우, 반올림 후 int로 재변환"""
@@ -1184,21 +1214,65 @@ class NonIdentifierMethod(QMainWindow):
         return result   
 
 
-    #데이터 tab2_output 저장 및 화면 끄기
-    def finishButton(self):
-        global after, SelectColumn, SelectColumnName, tab2_output, tab1_input
-        tab2_output[tab2_output.columns[SelectColumn]] = after #change values
-        tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
-        print(tab2_output)
-        self.ui.hide()
-
-    #통계값에서 part(group) 저장 시 사용
-    def finishButton2(self):
-        global after, SelectColumn, SelectColumnName, tab2_output, tab1_input
+    #데이터 tab2_output 및 methodTable 저장 및 UI 끄기
+    def finishButton(self, methodname):
+        global before, after, SelectColumn, SelectColumnName, tab2_output, tab1_input
         tab2_output[tab2_output.columns[SelectColumn]] = after[SelectColumnName] #change values
         tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
         print(tab2_output)
         self.ui.hide()
+        
+        changednumber = self.calculateCahngeValue(before, after, SelectColumnName)
+
+        #methodTable에 이미 비식별 메소드가 있다면 삭제
+        if(SelectColumnName in ex.methodCol_List):
+            print("this is duplicated check")
+            self.parent().ui.methodTable.removeRow(int(ex.methodCol_List[SelectColumnName])) #컬럼이 저장된 행 삭제
+            for key, value in ex.methodCol_List.items():
+                if value > ex.methodCol_List[SelectColumnName]:
+                    ex.methodCol_List[key] -= 1
+            del ex.methodCol_List[SelectColumnName]  #딕셔너리에서 컬럼 삭제
+
+
+        if(methodname == "Swap"):
+            self.methodTable_Box(SelectColumnName, methodname, self.swap_list, changednumber)
+        elif(methodname == "Shuffle"):
+            self.methodTable_Level(SelectColumnName, methodname,  ("Suffled " + str(self.shufflenumber)), changednumber)
+        elif(methodname == "Suppresion"):
+            print("Suppresion") #insert ujin's code
+        elif(methodname == "Masking"): 
+            self.methodTable_Level(SelectColumnName, methodname, ("level " + str(self.m_level)), changednumber)
+        elif(methodname == "Aggregation"):
+            self.methodTable_Level(SelectColumnName, methodname, self.AggregationLevel, changednumber)
+        elif (methodname == "Rounding"):
+            self.methodTable_Level(SelectColumnName, methodname, self.RoundingLevel, changednumber)
+
+        ex.methodCol_List[SelectColumnName]  = self.parent().ui.methodTable.rowCount()-1 #컬럼이 저장된 행 저장  
+        print(ex.methodCol_List)
+
+
+
+    def methodTable_Level(self, colName, method, level, changeNumber):
+        self.parent().ui.methodTable.insertRow(self.parent().ui.methodTable.rowCount())
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 0, QTableWidgetItem(str(colName))) #column name
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 1, QTableWidgetItem(str(method))) #비식별 method
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 2, QTableWidgetItem(str(level))) #detail
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 3, QTableWidgetItem(str(changeNumber))) #영향받은 row 수 
+ 
+
+    def methodTable_Box(self, colName, method, level_list, changeNumber):
+        levelcom = QComboBox() 
+        levelcom.addItems(level_list)
+
+        self.parent().ui.methodTable.insertRow(self.parent().ui.methodTable.rowCount())
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 0, QTableWidgetItem(str(colName))) #column name
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 1, QTableWidgetItem(str(method))) #비식별 method
+        self.parent().ui.methodTable.setCellWidget(self.parent().ui.methodTable.rowCount()-1, 2, levelcom)
+        self.parent().ui.methodTable.setItem(self.parent().ui.methodTable.rowCount()-1, 3, QTableWidgetItem(str(changeNumber))) #영향받은 row 수
+
+    def calculateCahngeValue(self, beforedata, afterdata, colname):
+        df = beforedata[colname] != afterdata[colname]
+        return (df == True).sum()  
 
 
 if __name__ == '__main__':
