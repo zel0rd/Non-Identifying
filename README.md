@@ -1,63 +1,49 @@
 # [D&D] Non-Identifying
 
-## How to download this repository
+### Project Overview
+It is a tool for Non-Identifying that prevents certain individuals from being exposed to data.  
+The tool has many features.  
+  
+1. File Import
+  - handling missing values(결측치 처리)  
+  - Select columns to use(사용할 컬럼 선택)  
+  - Select data attribute(속성 선택: 식별자, 비식별자, 민감정보, 일반정보)  
+  - Select data type (데이터 타입 선택)
+  
+2. Non-Identifying
+  - Swap(교환)  
+  - Shuffle(재배열: 랜덤하게 섞기)    
+  - Suppression(범주화: 이항변수화, 이산형화)  
+  - Masking or Remove(마스킹 혹은 삭제)  
+  - Aggregation(통계값처리: 평균, 최빈, 최소, 최대)  
+  - Rounding(라운딩: 올림, 내림, 반올림, 랜덤)  
+  - Privacy Model: K-Anonymity, L-Diversity(프라이버시모델: K-익명성, L-다양성)  
+  
+3. Result: Compare before & after data  
+  - Re-identification risk graph  
+  - Data Correlation  
 
-In a terminal, do following command in where you want to create git repository.
-For example, in /home/User/repo, do:
+### Used tool
+-   **Language: Python 3.6.5
+-   **Deisgn: Qt Designer
+
+### Installing the source
+1. Download.
 ```
 git clone git@github.com:dd-nonidentifying/Non-Identifying.git
 ```
-Then a folder named counterUAV will be created. After that, create your own branch and upload your works. 
-Master branch is a basically provided git repository where we will not use for this project. 
+2. Run the code with python.
 
-## How to create your branch
-In the git repository do following command:
-```
-git checkout -b <your branch name>
-```
-For example:
-```
-git checkout -b spark
-```
-Then you will have your branch with your branch name.
-To check the branch where you are, do:
-```
-git branch
-```
+# Program Imgae
 
-To change branch, do:
-```
-git checkout <branch name>
-```
-For example,
-```
-git checkout spark
-git checkout master
-```
+### First Tab
 
-## How to download data
-To download all the data in a git repository, do:
-```
-git pull
-```
-If you did not specify a git branch, this will download all data where you are now. 
-If you want to download data to your git repository from other git repository, do:
-```
-git pull origin spark
-git pull origin master
-```
-## How to upload data
-To upload all the data, use following commands at the top level of your git repository:
-```
-git status                                        To check the changes in the repository
-git add --all *                                   Add all changes in the repository on a commit list
-git commit -m "<comments about this upload">      Get commit number and commit changes
-git push                                          Upload data
-```
-## !!! Be cautious not to screw other git repository !!!
-Before you upload data, do```git pull```first at anytime.
+- Data import and Non-Identification
 
+<img src="./image/tab1_image.png" width="60%" height=60%/>
 
-## How to ignore all the changes in a repository
-use
-```
+### Second Tab
+
+- Compare before and after data
+
+<img src="./image/tab2_image.png" width="60%" height=60%/>
