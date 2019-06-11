@@ -781,7 +781,7 @@ class NonIdentifierMethod(QMainWindow):
                 self.ui.compareTable.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
 
             self.ui.runButton.clicked.connect(self.Swap)
-            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Swap"))
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("교환"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -799,7 +799,7 @@ class NonIdentifierMethod(QMainWindow):
                 self.ui.BeforeData.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
 
             self.ui.runButton.clicked.connect(self.Shuffle)
-            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Shuffle"))
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("재배열"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -855,7 +855,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.columns.currentIndexChanged.connect(self.changeGraphCombobox)
 
             self.ui.runButton.clicked.connect(self.Outlier)
-            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Aggregation"))
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("통계 처리"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -873,7 +873,7 @@ class NonIdentifierMethod(QMainWindow):
                 self.ui.BeforeData.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
 
             self.ui.runButton.clicked.connect(self.Rounding)
-            self.ui.finishButton.clicked.connect(lambda: self.finishButton("Rounding"))
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("라운딩"))
             self.ui.cancelButton.clicked.connect(self.ui.hide)
             self.ui.backButton.clicked.connect(self.InitUI)
 
@@ -1109,7 +1109,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((after[after.columns[0]][j])))
         
         #self.ui.backButton.clicked.connect(self.ui.hide)
-        self.ui.finishButton.clicked.connect(lambda: self.finishButton("Masking"))
+        self.ui.finishButton.clicked.connect(lambda: self.finishButton("마스킹"))
         self.ui.cancelButton.clicked.connect(self.ui.hide)
 
     #data Rounding start
@@ -1221,26 +1221,26 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.columns.hide()
             self.ui.group.hide()
             self.ui.function.clear() 
-            self.ui.function.addItem("SUM")
-            self.ui.function.addItem("MEAN")
+            self.ui.function.addItem("덧셈")
+            self.ui.function.addItem("평균값")
             self.beforeGraph(tab1_input[tab1_input.columns[SelectColumn]])
         elif index == 1: 
             self.ui.columns.hide()
             self.ui.group.hide()
             self.ui.function.clear() 
-            self.ui.function.addItem("MEAN")
-            self.ui.function.addItem("MAX")
-            self.ui.function.addItem("MIN")
-            self.ui.function.addItem("MEDIAN")
-            self.ui.function.addItem("MODE")
-            self.ui.function.addItem("REMOVE")
+            self.ui.function.addItem("평균값")
+            self.ui.function.addItem("최대값")
+            self.ui.function.addItem("최소값")
+            self.ui.function.addItem("중앙값")
+            self.ui.function.addItem("최빈값")
+            self.ui.function.addItem("삭제")
             self.beforeGraph(tab1_input[tab1_input.columns[SelectColumn]])
         elif index == 2:
             self.ui.function.clear() 
-            self.ui.function.addItem("MEAN")
-            self.ui.function.addItem("MEDIAN")
-            self.ui.function.addItem("MODE")
-            self.ui.function.addItem("REMOVE")
+            self.ui.function.addItem("평균값")
+            self.ui.function.addItem("중앙값")
+            self.ui.function.addItem("최빈값")
+            self.ui.function.addItem("삭제")
             
             self.ui.columns.show() #컬럼 이름 넣기(현재 선택한 컬럼 제외)
             self.ui.columns.clear()
@@ -1367,19 +1367,19 @@ class NonIdentifierMethod(QMainWindow):
             del ex.methodCol_List[SelectColumnName]  #딕셔너리에서 컬럼 삭제
 
 
-        if(methodname == "Swap"):
+        if(methodname == "교환"):
             self.methodTable_Box(SelectColumnName, methodname, self.swap_list, changednumber)
-        elif(methodname == "Shuffle"):
+        elif(methodname == "재배열"):
             self.methodTable_Level(SelectColumnName, methodname,  ("Suffled " + str(self.shufflenumber)), changednumber)
         elif(methodname == "연속 변수 범주화"):
             self.methodTable_Box(SelectColumnName, methodname, self.i_Categorical, changednumber)
         elif(methodname == "순위 변수 범주화"):
             self.methodTable_Box(SelectColumnName, methodname, self.o_Categorical, changednumber)
-        elif(methodname == "Masking"): 
+        elif(methodname == "마스킹"): 
             self.methodTable_Level(SelectColumnName, methodname, ("level " + str(self.m_level)), changednumber)
-        elif(methodname == "Aggregation"):
+        elif(methodname == "통계 처리"):
             self.methodTable_Level(SelectColumnName, methodname, self.AggregationLevel, changednumber)
-        elif (methodname == "Rounding"):
+        elif (methodname == "라운딩"):
             self.methodTable_Level(SelectColumnName, methodname, self.RoundingLevel, changednumber)
 
         ex.methodCol_List[SelectColumnName]  = self.parent().ui.methodTable.rowCount()-1 #컬럼이 저장된 행 저장  
