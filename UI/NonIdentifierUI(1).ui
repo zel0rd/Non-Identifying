@@ -91,7 +91,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
             <property name="leftMargin">
-             <number>17</number>
+             <number>11</number>
             </property>
             <property name="topMargin">
              <number>11</number>
@@ -225,6 +225,9 @@
               <column/>
              </widget>
             </item>
+            <item row="0" column="1">
+             <layout class="QVBoxLayout" name="verticalLayout_2"/>
+            </item>
            </layout>
           </widget>
           <widget class="QSplitter" name="splitter_3">
@@ -237,355 +240,6 @@
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
-           <widget class="QTabWidget" name="DATAtab">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>401</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>맑은 고딕</family>
-             </font>
-            </property>
-            <property name="currentIndex">
-             <number>0</number>
-            </property>
-            <widget class="QWidget" name="DTtab">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <attribute name="title">
-              <string>데이터 변환</string>
-             </attribute>
-             <layout class="QGridLayout" name="gridLayout_10">
-              <item row="0" column="0">
-               <widget class="QSplitter" name="splitter">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <widget class="QGroupBox" name="TYPE4">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="layoutDirection">
-                  <enum>Qt::LeftToRight</enum>
-                 </property>
-                 <property name="autoFillBackground">
-                  <bool>true</bool>
-                 </property>
-                 <property name="title">
-                  <string>Type</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_3">
-                  <property name="leftMargin">
-                   <number>5</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>5</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>5</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>5</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QRadioButton" name="ID">
-                    <property name="text">
-                     <string>식별자</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QRadioButton" name="QD">
-                    <property name="text">
-                     <string>준식별자</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QRadioButton" name="GI">
-                    <property name="text">
-                     <string>일반정보</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QRadioButton" name="SA">
-                    <property name="text">
-                     <string>민감정보</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-                <widget class="QListWidget" name="typeListWidget">
-                 <property name="font">
-                  <font>
-                   <underline>true</underline>
-                  </font>
-                 </property>
-                 <property name="editTriggers">
-                  <set>QAbstractItemView::NoEditTriggers</set>
-                 </property>
-                 <property name="selectionMode">
-                  <enum>QAbstractItemView::SingleSelection</enum>
-                 </property>
-                 <property name="currentRow">
-                  <number>-1</number>
-                 </property>
-                </widget>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="TYPEtab">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <attribute name="title">
-              <string>데이터 타입</string>
-             </attribute>
-             <layout class="QGridLayout" name="gridLayout_4">
-              <item row="0" column="0">
-               <widget class="QTableWidget" name="typeTable">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="rowCount">
-                 <number>10</number>
-                </property>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <row/>
-                <column>
-                 <property name="text">
-                  <string>열 이름</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>포맷</string>
-                 </property>
-                </column>
-                <column>
-                 <property name="text">
-                  <string>속성</string>
-                 </property>
-                </column>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </widget>
-           <widget class="QGroupBox" name="PMbox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <family>맑은 고딕</family>
-             </font>
-            </property>
-            <property name="title">
-             <string>프라이버시 모델</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="0" column="0">
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QPushButton" name="privacyAdd">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>맑은 고딕</family>
-                   <pointsize>9</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>추가</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QPushButton" name="privacyDelete">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>맑은 고딕</family>
-                   <pointsize>9</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>삭제</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </item>
-             <item row="1" column="0">
-              <widget class="QTableWidget" name="privacyTable">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="sizeAdjustPolicy">
-                <enum>QAbstractScrollArea::AdjustIgnored</enum>
-               </property>
-               <property name="rowCount">
-                <number>0</number>
-               </property>
-               <column>
-                <property name="text">
-                 <string>타입</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>모델</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>속성</string>
-                </property>
-               </column>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QGroupBox" name="DCbox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <family>맑은 고딕</family>
-             </font>
-            </property>
-            <property name="title">
-             <string>이용된 비식별 방법</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="0">
-              <widget class="QTableWidget" name="methodTable">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="editTriggers">
-                <set>QAbstractItemView::NoEditTriggers</set>
-               </property>
-               <column>
-                <property name="text">
-                 <string>속성</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>메소드</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>상세 정보</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>변경된 값 수</string>
-                </property>
-               </column>
-              </widget>
-             </item>
-            </layout>
-           </widget>
           </widget>
          </widget>
         </item>
@@ -637,13 +291,13 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_8">
                <property name="leftMargin">
-                <number>5</number>
+                <number>11</number>
                </property>
                <property name="topMargin">
                 <number>0</number>
                </property>
                <property name="rightMargin">
-                <number>5</number>
+                <number>11</number>
                </property>
                <property name="bottomMargin">
                 <number>11</number>
@@ -907,7 +561,7 @@
              </widget>
              <widget class="QTabWidget" name="tabWidget_2">
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="CorrelationGraph">
                <attribute name="title">
@@ -1001,11 +655,6 @@
   <action name="actionimport_data">
    <property name="text">
     <string>데이터 가져오기</string>
-   </property>
-   <property name="font">
-    <font>
-     <family>맑은 고딕</family>
-    </font>
    </property>
   </action>
   <action name="actionsave_data">

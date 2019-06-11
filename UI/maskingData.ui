@@ -6,25 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>900</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>마스킹 및 삭제</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="arrBox">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
-      <width>761</width>
-      <height>121</height>
+      <y>120</y>
+      <width>851</width>
+      <height>141</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+     </font>
+    </property>
     <property name="title">
-     <string>arrangment</string>
+     <string>배치</string>
     </property>
     <widget class="QRadioButton" name="arrLeft">
      <property name="geometry">
@@ -36,20 +41,20 @@
       </rect>
      </property>
      <property name="text">
-      <string>Arrangement items to the left</string>
+      <string>왼쪽 정렬</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="arrRight">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>80</y>
+       <y>90</y>
        <width>361</width>
        <height>29</height>
       </rect>
      </property>
      <property name="text">
-      <string>Arrangement items to the right</string>
+      <string>오른쪽 정렬</string>
      </property>
     </widget>
    </widget>
@@ -57,10 +62,16 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>510</y>
-      <width>761</width>
+      <y>550</y>
+      <width>861</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+      <pointsize>9</pointsize>
+     </font>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
@@ -69,22 +80,40 @@
    <widget class="QWidget" name="horizontalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>530</y>
+      <x>180</x>
+      <y>570</y>
       <width>691</width>
       <height>61</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QPushButton" name="backButton">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>&lt; back</string>
+        <string>&lt; 이전</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -98,13 +127,25 @@
      </item>
      <item>
       <widget class="QPushButton" name="nextButton">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>next &gt;</string>
+        <string>다음 &gt;</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_5">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -118,13 +159,25 @@
      </item>
      <item>
       <widget class="QPushButton" name="finishButton">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>finish</string>
+        <string>완료</string>
        </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_3">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -138,8 +191,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="cancelButton">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>cancel</string>
+        <string>취소</string>
        </property>
       </widget>
      </item>
@@ -149,8 +208,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
-      <width>761</width>
+      <y>100</y>
+      <width>861</width>
       <height>20</height>
      </rect>
     </property>
@@ -161,32 +220,40 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>40</y>
+      <x>40</x>
+      <y>30</y>
       <width>551</width>
       <height>61</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>맑은 고딕</family>
       <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
-     <string>Non-Identifier: Masking and Remove</string>
+     <string>비식별 처리 기법 : 마스킹 및 삭제</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="maskingBox">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>260</y>
-      <width>761</width>
-      <height>121</height>
+      <y>270</y>
+      <width>851</width>
+      <height>141</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+     </font>
+    </property>
     <property name="title">
-     <string>Masking</string>
+     <string>마스킹</string>
     </property>
     <widget class="QRadioButton" name="maskRight">
      <property name="geometry">
@@ -198,20 +265,20 @@
       </rect>
      </property>
      <property name="text">
-      <string>Mask characters left to right</string>
+      <string>왼쪽에서 오른쪽으로 마스킹</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="maskLeft">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>80</y>
+       <y>90</y>
        <width>361</width>
        <height>29</height>
       </rect>
      </property>
      <property name="text">
-      <string>Mask characters right to left</string>
+      <string>오른쪽에서 왼쪽으로 마스킹</string>
      </property>
     </widget>
    </widget>
@@ -219,34 +286,39 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>390</y>
-      <width>761</width>
-      <height>91</height>
+      <y>420</y>
+      <width>851</width>
+      <height>101</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+     </font>
+    </property>
     <property name="title">
-     <string>Characters</string>
+     <string>문자열</string>
     </property>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>40</x>
        <y>40</y>
-       <width>181</width>
-       <height>25</height>
+       <width>141</width>
+       <height>44</height>
       </rect>
      </property>
      <property name="text">
-      <string>Masking character</string>
+      <string>마스킹 문자열</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="m_comboBox">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>190</x>
        <y>40</y>
-       <width>161</width>
-       <height>31</height>
+       <width>120</width>
+       <height>44</height>
       </rect>
      </property>
      <item>
@@ -268,14 +340,14 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>400</x>
+       <x>410</x>
        <y>40</y>
-       <width>141</width>
-       <height>25</height>
+       <width>121</width>
+       <height>44</height>
       </rect>
      </property>
      <property name="text">
-      <string>Masking level</string>
+      <string>마스킹 단계</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="maskingText">
@@ -283,12 +355,12 @@
       <rect>
        <x>540</x>
        <y>40</y>
-       <width>201</width>
-       <height>31</height>
+       <width>120</width>
+       <height>44</height>
       </rect>
      </property>
     </widget>
-    <zorder>comboBox</zorder>
+    <zorder>m_comboBox</zorder>
     <zorder>label_3</zorder>
     <zorder>label_2</zorder>
     <zorder>maskingText</zorder>

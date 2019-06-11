@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
-    <height>600</height>
+    <width>900</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Import Data</string>
+   <string>데이터 가져오기</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>530</y>
+      <x>360</x>
+      <y>570</y>
       <width>511</width>
       <height>61</height>
      </rect>
@@ -26,8 +26,14 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="nextButton">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>next &gt;</string>
+        <string>다음 &gt;</string>
        </property>
       </widget>
      </item>
@@ -46,8 +52,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="finishButton">
+       <property name="font">
+        <font>
+         <family>맑은 고딕</family>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>finish</string>
+        <string>완료</string>
        </property>
       </widget>
      </item>
@@ -66,86 +78,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="cancelButton">
-       <property name="text">
-        <string>cancel</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>21</x>
-      <y>50</y>
-      <width>751</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="label">
        <property name="font">
         <font>
+         <family>맑은 고딕</family>
          <pointsize>9</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>location</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_6">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QTextBrowser" name="filePath">
-       <property name="minimumSize">
-        <size>
-         <width>470</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>40</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_7">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QToolButton" name="toolButton">
-       <property name="font">
-        <font>
-         <pointsize>9</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>browse...</string>
+        <string>취소</string>
        </property>
       </widget>
      </item>
@@ -155,21 +95,26 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>160</y>
-      <width>761</width>
-      <height>341</height>
+      <y>150</y>
+      <width>851</width>
+      <height>391</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+     </font>
+    </property>
     <property name="title">
-     <string>Input data</string>
+     <string>입력 데이터</string>
     </property>
     <widget class="QTableWidget" name="InputData">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>741</width>
-       <height>291</height>
+       <width>831</width>
+       <height>341</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -297,13 +242,76 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>510</y>
-      <width>761</width>
+      <y>550</y>
+      <width>851</width>
       <height>20</height>
      </rect>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="filePath">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>60</y>
+      <width>621</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>580</width>
+      <height>40</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>40</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton">
+    <property name="geometry">
+     <rect>
+      <x>754</x>
+      <y>60</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>검색...</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>50</y>
+      <width>51</width>
+      <height>59</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>맑은 고딕</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>열기</string>
     </property>
    </widget>
   </widget>
