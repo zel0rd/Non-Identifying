@@ -49,8 +49,8 @@ class MainWidget(QMainWindow):
 
         self.ui.INPUTtable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.ui.actionimport_data.triggered.connect(self.ImportData) #importData from csv
-        #self.ui.actionNonIdentifier.triggered.connect(self.MaskingData) # not complete 수정중
-        self.ui.actionNonIdentifier.triggered.connect(self.CategoricalData)
+        self.ui.actionNonIdentifier.triggered.connect(self.MaskingData) # not complete 수정중
+        #self.ui.actionNonIdentifier.triggered.connect(self.CategoricalData)
     
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -61,21 +61,21 @@ class MainWidget(QMainWindow):
         self.ui.hide()
         self.newWindow = ImportDataWindow(self)
     
-    """
     def MaskingData(self):
         col = self.ui.INPUTtable.currentColumn() #get Selected Column number
         if self.ui.INPUTtable.item(col,0) is None: # if value is null, do nothing
             print('cell has nothing (NonIdentifierMethod)')
         else: #if not null, radio button check
             self.newWindow = MaskingDataMethod(self)
+    
     """
-
     def CategoricalData(self):
         col = self.ui.INPUTtable.currentColumn() #get Selected Column number
         if self.ui.INPUTtable.item(col,0) is None: # if value is null, do nothing
             print('cell has nothing (NonIdentifierMethod)')
         else: #if not null, radio button check
             self.newWindow = CategoricalDataMethod(self)
+    """
 
 class ImportDataWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -310,17 +310,13 @@ class MaskingDataMethod(QMainWindow):
         SelectColumnName = self.parent().ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
         
         self.m_index = self.ui.m_comboBox.currentIndexChanged.connect(self.usedbyMasking)
-
         self.level = self.ui.maskingText.textChanged.connect(self.usedbyMasking)
 
         before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
-        #after = before.copy()
         rownum = len(before.index) # get row count
         colnum = len(before.columns) # get column count
         
         print("--------")
-        #print("print after")
-        #print(after)
         print(before)
         print(before[before.columns[0]][1])
         print(before.columns)
@@ -354,54 +350,61 @@ class MaskingDataMethod(QMainWindow):
         global before, after
     
         after = before.copy()
+        maskingLev = []
 
-        before_uniq = before[before.columns[0]].unique()
+        before_uniq = before[SelectColumnName].unique()
+        before_uniq = list(before_uniq)
+        maskingLev = list(before_uniq)
+
+        print("@@@@@@")
         print(before_uniq)
         print(type(before_uniq))
         
-        uniq = [] #type : list
+        #uniq = [] #type : list
         uniq_slice = []
         uniq_len = []
-        max_len = len(str(before[before.columns[0]][0]))
-
-        #print("before")
-        #print(after[after.columns[0]][0])
+        
+        max_len = len(str(before[SelectColumnName][0]))
 
         for j in range(rownum): #rendering data (inputtable of Tab1)
-            #self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
-            if max_len < len(str(before[before.columns[0]][j])):
-                max_len = len(str(before[before.columns[0]][j]))
+            if max_len < len(str(before[SelectColumnName][j])):
+                max_len = len(str(before[SelectColumnName][j]))
            
         self.ui.maskingLevel.setColumnCount(2)
 
-        print("****")
-        print(self.m_index)
-        print(type(self.m_index))
-
+        
         for j in range(rownum): #rendering data (inputtable of Tab1)
             for u in range(len(before_uniq)):
-                uniq.append(before_uniq[u])
-                uniq[u] = str(uniq[u]) 
-                uniq_slice.append(list(uniq[u])) # 한글자씩 추출하기 위해 list 사용
-         
-                uniq_len.append(len(uniq[u])) # 마스킹할 데이터의 최대 길이 구하는 것
+                #uniq.append(before_uniq[u])
+                #uniq[u] = str(uniq[u]) 
+                #uniq_slice.append(list(uniq[u])) # 한글자씩 추출하기 위해 list 사용
+                #uniq_len.append(len(uniq[u])) # 마스킹할 데이터의 최대 길이 구하는 것
+
+                before_uniq[u] = str(before_uniq[u])
+                
+                uniq_slice.append(list(before_uniq[u])) 
+                uniq_len.append(len(before_uniq[u])) # 마스킹할 데이터의 최대 길이 구하는 것
 
                 for l in range(1,self.level+1):
-                    if before[before.columns[0]][j] == uniq[u]:
-                        #after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
-                        if(self.m_index == 0): # * masking
-                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
-                        elif(self.m_index == 1): # 0 masking
-                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "0")
-                        elif(self.m_index == 2): # remove
-                            after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], " ")
+                    #if before[before.columns[0]][j] == uniq[u]:
+                    #after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+                
+                    maskingLev[u] = str(maskingLev[u]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+        
+                if(self.m_index == 0): # * masking
+                    #after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "*")
+                    after.loc[after[SelectColumnName]==str(before_uniq[u]), SelectColumnName] = str(maskingLev[u])
+                elif(self.m_index == 1): # 0 masking
+                    after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], "0")
+                elif(self.m_index == 2): # remove
+                    after[after.columns[0]][j] = str(after[after.columns[0]][j]).replace(uniq_slice[u][uniq_len[u]-l], " ")
 
-                        
-            self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
-            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((after[after.columns[0]][j])))
-          
+
+            self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(before[SelectColumnName][j]))
+            self.ui.maskingLevel.setItem(j,1,QTableWidgetItem(after[after.columns[0]][j]))
+        
         #self.ui.cancelButton.clicked.connect(self.MaskingDataMethod)
-"""
+"""        
 
 class CategoricalDataMethod(QMainWindow):
     global tab1_input, tab2_output
@@ -433,12 +436,19 @@ class CategoricalDataMethod(QMainWindow):
             self.ui = uic.loadUi("./UI/ordering_categorical.ui")
             self.ui.show()
         
-            self.original_uniq = before[before.columns[0]].unique()
+            #self.original_uniq = before[before.columns[0]].unique()
+            self.original_uniq = before[SelectColumnName].unique()
             self.ui.original.setRowCount(len(self.original_uniq))
             self.ui.original.setHorizontalHeaderLabels(['values'])
-            print(type(self.original_uniq))
-            print("first element")
-            print(self.original_uniq[0])
+
+            self.ui.categorical.setHorizontalHeaderLabels(['categorical'])
+            self.ui.categorical.setRowCount(len(self.original_uniq))
+
+            self.original_uniq = list(self.original_uniq)
+            self.original_pop = self.original_uniq.copy()   # type: list
+            self.groupEle = []
+            self.str_groupEle = []
+            self.a = 0
 
             for v in range(len(self.original_uniq)):
                 self.ui.original.setItem(v,0,QTableWidgetItem(str(self.original_uniq[v])))
@@ -497,33 +507,44 @@ class CategoricalDataMethod(QMainWindow):
                         self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
 
     def Ordering_Categorical(self):
-        after = before.copy()
-
-        self.ui.categorical.setHorizontalHeaderLabels(['categorical'])
 
         orderValue = self.ui.orderText.toPlainText()
         UsrChckVal = orderValue.split(',')
         UsrChckVal = [int (i) for i in UsrChckVal] #배열 원소 int형으로 변환
-        print(UsrChckVal[0])
-        print(type(UsrChckVal[0]))
+
+        categoricalNum = len(self.original_pop) - len(UsrChckVal)
+        groupEle_tmp = []
         
-        #groupEle = []
 
-        for i in range(len(self.original_uniq)):
-            after.loc[after[SelectColumnName] == str(self.original_uniq[i]), SelectColumnName] = self.ui.original.item(i,1).text()
+        try:
+            if categoricalNum >= 0:
+                for c in range(len(UsrChckVal)):
+                    groupEle_tmp.append(self.original_uniq[UsrChckVal[c]-1])
+                    self.original_pop.remove(groupEle_tmp[c])
 
-        for j in range(rownum):
-            self.ui.categorical.setItem(j,1,QTableWidgetItem(str(after[after.columns[0]][j])))
-            #after.loc[i, SelectColumnName] = ((after.loc[i, SelectColumnName]+9*pow(10, number-1))//pow(10, number))*pow(10, number) # change number, up
-        """
-        for c in range((len(UsrChckVal))):
-            UsrElement = UsrChckVal[c]
-            UsrElement = UsrElement-1
-            groupEle.append(self.original_uniq[UsrElement])
-            print(groupEle)
-        """  
+                self.groupEle.append(groupEle_tmp)
+                groupEle_tmp = str(groupEle_tmp)
+                groupEle_tmp = groupEle_tmp.replace("'","")
+                self.str_groupEle.append(groupEle_tmp)
+                self.ui.categorical.setItem(self.a, 0, QTableWidgetItem(str(groupEle_tmp)))
+                print(len(self.groupEle[self.a]))
+                self.a = self.a + 1
+            
+            #print(self.groupEle)
+            #print(self.str_groupEle)
+            
+        except ValueError:
+            QtWidgets.QMessageBox.about(self, 'Error','이미 범주화 처리가 된 요소입니다.')
+        pass
+      
+        self.ui.finishButton.clicked.connect(self.Ordering_Categorical_finish)
 
+    def Ordering_Categorical_finish(self):
+        after = before.copy()
 
+        for b in range(self.a):
+            for z in range(len(self.groupEle[b])):
+                after.loc[after[SelectColumnName]==str((self.groupEle[b][z])), SelectColumnName] = str((self.str_groupEle[b]))
 
                     
 if __name__ == '__main__':

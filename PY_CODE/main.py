@@ -743,7 +743,6 @@ class NonIdentifierMethod(QMainWindow):
         global before, SelectColumn, SelectColumnName, rownum, colnum #TODO, self로 바꾸기
         SelectColumn = self.parent().ui.INPUTtable.currentColumn() #get Selected Column number
         SelectColumnName = self.parent().ui.INPUTtable.horizontalHeaderItem(SelectColumn).text() #get Selected Column name
-        
 
         before = tab1_input[tab1_input.columns[SelectColumn]].to_frame() #pull one column and convert list
         rownum = len(before.index) # get row count
@@ -805,7 +804,12 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
 
         elif(self.ui.Method3.isChecked()):
-            print("범주화 메소드") #insert ujin's code
+            self.ui = uic.loadUi("./UI/CategoricalData.ui") #insert your UI path
+            self.ui.show()
+
+            self.ui.nextButton.clicked.connect(self.Categorical_next)
+            self.ui.cancelButton.clicked.connect(self.ui.hide)
+            self.ui.backButton.clicked.connect(self.InitUI)
         
         elif(self.ui.Method4.isChecked()): # 마스킹 및 삭제
             self.ui = uic.loadUi("./UI/maskingData.ui") #insert your UI path
@@ -878,7 +882,6 @@ class NonIdentifierMethod(QMainWindow):
     def usedbyMasking(self):
         self.m_level = self.ui.maskingText.toPlainText()
         self.m_index = self.ui.m_comboBox.currentIndex()
-        print(self.m_index)
         try:
             self.m_level = int(self.m_level)
             if(self.m_level<1):
@@ -931,7 +934,137 @@ class NonIdentifierMethod(QMainWindow):
         print(after)
     #Shuffle() end
 
+    def Categorical_next(self):
+        global before, after
 
+        if(self.ui.ordering.isChecked()):
+            self.ui = uic.loadUi("./UI/ordering_categorical.ui")
+            self.ui.show()
+        
+            self.original_uniq = before[SelectColumnName].unique()
+            self.ui.original.setRowCount(len(self.original_uniq))
+            self.ui.original.setHorizontalHeaderLabels(['values'])
+
+            self.ui.categorical.setHorizontalHeaderLabels(['categorical'])
+            self.ui.categorical.setRowCount(len(self.original_uniq))
+
+            self.original_uniq = list(self.original_uniq)
+            self.original_pop = self.original_uniq.copy()   # type: list
+            self.groupEle = []
+            self.str_groupEle = []
+            self.a = 0
+
+            for v in range(len(self.original_uniq)):
+                self.ui.original.setItem(v,0,QTableWidgetItem(str(self.original_uniq[v])))
+            
+            self.ui.runButton.clicked.connect(self.Ordering_Categorical)
+            self.ui.cancelButton.clicked.connect(self.ui.hide)
+
+        elif(self.ui.intervals.isChecked()):
+            self.ui = uic.loadUi("./UI/intervals_categorical.ui") #insert your UI path
+            self.ui.show()
+
+            self.ui.original.setRowCount(rownum) #Set Column Count s 
+            self.ui.original.setHorizontalHeaderLabels(['original'])
+
+            for j in range(rownum): #rendering data (inputtable of Tab1)
+                self.ui.original.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
+
+            self.ui.runButton.clicked.connect(self.Intervals_Categorical)
+            self.ui.finishButton.clicked.connect(lambda: self.finishButton("연속 변수 범주화"))
+            self.ui.cancelButton.clicked.connect(self.ui.hide)
+    
+    def Ordering_Categorical(self):
+        orderValue = self.ui.orderText.toPlainText()
+        UsrChckVal = orderValue.split(',')
+        print(UsrChckVal)
+        UsrChckVal = [int (i) for i in UsrChckVal] #배열 원소 int형으로 변환
+
+        
+
+        categoricalNum = len(self.original_pop) - len(UsrChckVal)
+        groupEle_tmp = []
+        
+        try:
+            if categoricalNum >= 0:
+                for c in range(len(UsrChckVal)):
+                    groupEle_tmp.append(self.original_uniq[UsrChckVal[c]-1])
+                    self.original_pop.remove(groupEle_tmp[c])
+
+                self.groupEle.append(groupEle_tmp)
+                groupEle_tmp = str(groupEle_tmp)
+                groupEle_tmp = groupEle_tmp.replace("'","")
+                self.str_groupEle.append(groupEle_tmp)
+                self.ui.categorical.setItem(self.a, 0, QTableWidgetItem(str(groupEle_tmp)))
+                print(len(self.groupEle[self.a]))
+                self.a = self.a + 1
+            
+        except ValueError:
+            QtWidgets.QMessageBox.about(self, 'Error','이미 범주화 처리가 된 요소입니다.')
+        pass
+      
+        self.ui.finishButton.clicked.connect(self.Ordering_Categorical_finish)
+
+    def Ordering_Categorical_finish(self):
+        global after, before
+        after = before.copy()
+
+        self.o_Categorical = []
+
+        for b in range(self.a):
+            for z in range(len(self.groupEle[b])):
+                after.loc[after[SelectColumnName]==str((self.groupEle[b][z])), SelectColumnName] = str((self.str_groupEle[b]))
+                for j in range(len(self.original_uniq)):
+                    if self.original_uniq[j] == self.groupEle[b][z]:
+                        self.o_Categorical.append(str(self.original_uniq[j]) + "  " + str(self.str_groupEle[b]))
+
+        self.finishButton("순위 변수 범주화")
+
+
+    def Intervals_Categorical(self):
+        global after, before
+        after = before.copy()
+
+        self.i_Categorical = []
+
+        self.ui.categorical.setRowCount(rownum) #Set Column Count s 
+        self.ui.categorical.setHorizontalHeaderLabels(['categorical'])
+
+        minValue = self.ui.minText.toPlainText()
+        maxValue = self.ui.maxText.toPlainText()
+        interValue = self.ui.interText.toPlainText()
+
+        try:
+            minValue = int(minValue)
+            maxValue = int(maxValue)
+            interValue = int(interValue)
+            if(minValue<1):
+                minValue/0
+            elif(maxValue<1):
+                maxValue/0
+            elif(interValue<1):
+                interValue/0
+        except Exception:
+            QtWidgets.QMessageBox.about(self, 'Error','Input can only be a number')
+        pass
+            
+        for j in range(rownum):
+            if before[before.columns[0]][j] < minValue:
+                after[after.columns[0]][j] = "<" + str(minValue)
+                self.i_Categorical.append(str(before[before.columns[0]][j]) + "  " + str(after[after.columns[0]][j]))
+                self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
+            elif before[before.columns[0]][j] > maxValue:
+                after[after.columns[0]][j] = ">" + str(maxValue)
+                self.i_Categorical.append(str(before[before.columns[0]][j]) + "  " + str(after[after.columns[0]][j]))
+                self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
+            else:
+                ii = int((maxValue-minValue)/interValue)
+                for i in range(ii):
+                    if before[before.columns[0]][j]-minValue >= i*interValue and before[before.columns[0]][j]-minValue < (i+1)*interValue:
+                        after[after.columns[0]][j] = "[" + str(minValue+i*interValue) + "," + str(minValue+(i+1)*interValue) + ")"
+                        self.i_Categorical.append(str(before[before.columns[0]][j]) + "  " + str(after[after.columns[0]][j]))
+                        self.ui.categorical.setItem(j,0,QTableWidgetItem(str(after[after.columns[0]][j])))
+             
 
     def Masking(self):
 
@@ -950,7 +1083,6 @@ class NonIdentifierMethod(QMainWindow):
         max_len = len(str(before[before.columns[0]][0]))
 
         for j in range(rownum): #rendering data (inputtable of Tab1)
-            #self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(before[before.columns[0]][j])))
             if max_len < len(str(before[before.columns[0]][j])):
                 max_len = len(str(before[before.columns[0]][j]))
 
@@ -1217,6 +1349,7 @@ class NonIdentifierMethod(QMainWindow):
     #데이터 tab2_output 및 methodTable 저장 및 UI 끄기
     def finishButton(self, methodname):
         global before, after, SelectColumn, SelectColumnName, tab2_output, tab1_input
+        #print(after)
         tab2_output[tab2_output.columns[SelectColumn]] = after[SelectColumnName] #change values
         tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
         print(tab2_output)
@@ -1238,8 +1371,10 @@ class NonIdentifierMethod(QMainWindow):
             self.methodTable_Box(SelectColumnName, methodname, self.swap_list, changednumber)
         elif(methodname == "Shuffle"):
             self.methodTable_Level(SelectColumnName, methodname,  ("Suffled " + str(self.shufflenumber)), changednumber)
-        elif(methodname == "Suppresion"):
-            print("Suppresion") #insert ujin's code
+        elif(methodname == "연속 변수 범주화"):
+            self.methodTable_Box(SelectColumnName, methodname, self.i_Categorical, changednumber)
+        elif(methodname == "순위 변수 범주화"):
+            self.methodTable_Box(SelectColumnName, methodname, self.o_Categorical, changednumber)
         elif(methodname == "Masking"): 
             self.methodTable_Level(SelectColumnName, methodname, ("level " + str(self.m_level)), changednumber)
         elif(methodname == "Aggregation"):
