@@ -617,7 +617,9 @@ class ModifyData(QMainWindow):
         unchecked_number.reverse() # 리스트 거꾸로 넣어서 index error 제거, unchecked column remove
         for i in unchecked_number:
             tab1_input = tab1_input.drop(tab1_input.columns[i], axis=1) #사용자가 선택한 컬럼만 tab1_input에 저장
-            tab2_output = tab2_output.drop(tab2_output.columns[i], axis=1) 
+        
+        tab2_output = tab1_input.copy()
+        print(tab2_output)
 
         #print(checked_number) # just 확인용
         #print(check_columns) # just 확인용    
@@ -1351,7 +1353,7 @@ class NonIdentifierMethod(QMainWindow):
         global before, after, SelectColumn, SelectColumnName, tab2_output, tab1_input
         #print(after)
         tab2_output[tab2_output.columns[SelectColumn]] = after[SelectColumnName] #change values
-        tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
+        #tab2_output.dropna(inplace=True) #통계값에서 생기는 null 삭제 작업 필요
         print(tab2_output)
         self.ui.hide()
         
