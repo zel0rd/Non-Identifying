@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1250</width>
-    <height>1002</height>
+    <width>948</width>
+    <height>937</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -103,127 +103,7 @@
              <number>11</number>
             </property>
             <item row="0" column="0">
-             <widget class="QTableWidget" name="INPUTtable">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="rowCount">
-               <number>100</number>
-              </property>
-              <property name="columnCount">
-               <number>7</number>
-              </property>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <row/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-              <column/>
-             </widget>
+             <widget class="QTableView" name="INPUTtable"/>
             </item>
            </layout>
           </widget>
@@ -288,7 +168,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="title">
-                  <string>Type</string>
+                  <string>데이터 속성</string>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_3">
                   <property name="leftMargin">
@@ -387,7 +267,7 @@
                 <row/>
                 <column>
                  <property name="text">
-                  <string>열 이름</string>
+                  <string>컬럼</string>
                  </property>
                 </column>
                 <column>
@@ -424,7 +304,7 @@
              <item row="0" column="0">
               <layout class="QHBoxLayout" name="horizontalLayout">
                <item>
-                <spacer name="horizontalSpacer_2">
+                <spacer name="horizontalSpacer">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -456,19 +336,6 @@
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
                 <widget class="QPushButton" name="privacyDelete">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -486,19 +353,6 @@
                   <string>삭제</string>
                  </property>
                 </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
                </item>
               </layout>
              </item>
@@ -518,17 +372,17 @@
                </property>
                <column>
                 <property name="text">
-                 <string>타입</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
                  <string>모델</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>속성</string>
+                 <string>적용값</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>적용컬럼</string>
                 </property>
                </column>
               </widget>
@@ -564,12 +418,12 @@
                </property>
                <column>
                 <property name="text">
-                 <string>속성</string>
+                 <string>컬럼</string>
                 </property>
                </column>
                <column>
                 <property name="text">
-                 <string>메소드</string>
+                 <string>비식별기법</string>
                 </property>
                </column>
                <column>
@@ -653,254 +507,8 @@
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
-                 <widget class="QTableWidget" name="INPUTDATAtable">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="editTriggers">
-                   <set>QAbstractItemView::NoEditTriggers</set>
-                  </property>
-                  <property name="rowCount">
-                   <number>100</number>
-                  </property>
-                  <property name="columnCount">
-                   <number>7</number>
-                  </property>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                 </widget>
-                 <widget class="QTableWidget" name="OUTPUTDATAtable">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="editTriggers">
-                   <set>QAbstractItemView::NoEditTriggers</set>
-                  </property>
-                  <property name="rowCount">
-                   <number>100</number>
-                  </property>
-                  <property name="columnCount">
-                   <number>7</number>
-                  </property>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <row/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                  <column/>
-                 </widget>
+                 <widget class="QTableView" name="INPUTDATAtable"/>
+                 <widget class="QTableView" name="OUTPUTDATAtable"/>
                 </widget>
                </item>
               </layout>
@@ -931,7 +539,7 @@
               </widget>
               <widget class="QWidget" name="RiskGraph">
                <attribute name="title">
-                <string>위험 그래프</string>
+                <string>재식별 위험 그래프</string>
                </attribute>
                <layout class="QGridLayout" name="gridLayout_12">
                 <item row="0" column="0">
@@ -984,8 +592,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1250</width>
-     <height>38</height>
+     <width>948</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">
