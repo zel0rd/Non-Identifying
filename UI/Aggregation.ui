@@ -34,7 +34,7 @@
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -45,7 +45,7 @@
      </property>
      <layout class="QHBoxLayout" name="beforePlot"/>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>430</x>
@@ -300,12 +300,12 @@
     </item>
     <item>
      <property name="text">
-      <string>파트 별</string>
+      <string>컬럼별</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>그룹 파트 별</string>
+      <string>컬럼별(그룹)</string>
      </property>
     </item>
    </widget>
@@ -325,7 +325,7 @@
     </property>
     <item>
      <property name="text">
-      <string>덧셈</string>
+      <string>총합</string>
      </property>
     </item>
     <item>
