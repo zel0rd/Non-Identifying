@@ -65,7 +65,7 @@
       </font>
      </property>
      <property name="text">
-      <string>통계 처리</string>
+      <string>총계 처리</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="Method2">
