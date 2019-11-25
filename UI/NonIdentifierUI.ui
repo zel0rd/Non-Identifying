@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>948</width>
-    <height>937</height>
+    <width>571</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -136,7 +136,7 @@
              </font>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="DTtab">
              <property name="sizePolicy">
@@ -445,6 +445,62 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>결과 분석</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_15">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>비식별 레벨 추천</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="1" column="1">
+            <widget class="MplWidget" name="inputGraph_2" native="true">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QTableWidget" name="de_level_re_risk">
+             <column>
+              <property name="text">
+               <string>비식별 레벨</string>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>재식별 위험도</string>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="usab_txt">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="DeidentifierTab">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -453,7 +509,7 @@
         </sizepolicy>
        </property>
        <attribute name="title">
-        <string>비식별</string>
+        <string>상세 분석</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_9">
         <item row="0" column="0">
@@ -584,16 +640,16 @@
    </attribute>
    <addaction name="actionimport_data"/>
    <addaction name="actionsave_data"/>
-   <addaction name="actionRun"/>
    <addaction name="actionNonIdentifier"/>
+   <addaction name="actionRun"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>948</width>
-     <height>26</height>
+     <width>571</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFILE">
