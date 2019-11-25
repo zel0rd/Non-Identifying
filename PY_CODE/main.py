@@ -775,8 +775,8 @@ class NonIdentifierMethod(QMainWindow):
                 self.after[self.after.columns[0]][j] = "<" + str(minValue)
                 self.i_Categorical.append(str(self.before[self.before.columns[0]][j]) + "  " + str(self.after[self.after.columns[0]][j]))
                 self.ui.categorical.setItem(j,0,QTableWidgetItem(str(self.after[self.after.columns[0]][j])))
-            elif self.before[self.before.columns[0]][j] > maxValue:
-                self.after[self.after.columns[0]][j] = ">" + str(maxValue)
+            elif self.before[self.before.columns[0]][j] >= maxValue:
+                self.after[self.after.columns[0]][j] = ">= " + str(maxValue)
                 self.i_Categorical.append(str(self.before[self.before.columns[0]][j]) + "  " + str(self.after[self.after.columns[0]][j]))
                 self.ui.categorical.setItem(j,0,QTableWidgetItem(str(self.after[self.after.columns[0]][j])))
             else:
