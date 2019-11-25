@@ -800,6 +800,7 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.maskingLevel.setItem(j,0,QTableWidgetItem(str(self.before[self.before.columns[0]][j])))
             self.ui.maskingLevel.setItem(j,1,QTableWidgetItem((self.after[self.after.columns[0]][j])))        
 
+        
         #self.ui.backButton.clicked.connect(self.ui.hide)
         self.ui.finishButton.clicked.connect(lambda: self.finishButton("마스킹"))
         self.ui.cancelButton.clicked.connect(self.ui.hide)
