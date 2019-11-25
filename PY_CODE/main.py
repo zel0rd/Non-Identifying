@@ -8,6 +8,7 @@ import random #to shuffle data and random value
 from random import shuffle
 import numpy as np
 import pandas as pd
+import math
 import pandas.api.types as ptypes
 from pandas import Series, DataFrame
 from PyQt5.QtCore import pyqtSlot, Qt
@@ -268,6 +269,61 @@ class MainWidget(QMainWindow):
                 elif(current_value == 'T'):
                     print(self.ui.privacyTable.item(r, 1).text())
         
+        print("dtypes",self.originData.dtypes)
+        print("columns", self.originData.columns)
+
+        #데이터 유용성 데이터 부분
+        #한국인터넷진흥원, 개인정보 비식별 기술 경진대회 설명회 (n.p.: 한국인터넷진흥원, n.d.), 8.
+        #string형 제외
+        for col in range(len(self.originData.columns)):
+            #print(col)
+            if str(self.originData.dtypes[col]) == "object":
+                print(self.originData.dtypes[col])
+                originData_int = self.originData.drop([self.originData.columns[col]], axis =1)
+                finalData_int = self.Final_Output.drop([self.originData.columns[col]], axis =1)
+
+        print("@@",originData_int.columns)
+
+        origin = originData_int.values.tolist() 
+        final = finalData_int.values.tolist() 
+
+        print("origin len : ",len(origin))
+        print("final len : ",len(final))
+
+        befMoPlus_list = []
+        befMo_sqrt = [] #최종 분모 리스트
+        aftMoPlus_list = []
+        aftMo_sqrt = [] #최종 분모 리스트
+        Ja_list = [] #최종 분자 리스트
+        usab = []
+        usab_ave = 0
+
+        for i in range(len(origin)):
+            befMoPlus = 0
+            aftMoPlus = 0
+            Ja_val = 0
+
+            for j in range(len(origin[0])):
+                befMoPlus += pow(origin[i][j],2)
+                aftMoPlus += pow(final[i][j],2)
+                Ja_val += origin[i][j] * final[i][j]
+                #print(bef_val[i][j], "*", aft_val[i][j], "=", bef_val[i][j] * aft_val[i][j])
+
+            befMoPlus_list.append(befMoPlus)
+            befMo_sqrt.append(math.sqrt(befMoPlus_list[i])) #sqrt : 제곱근
+            aftMoPlus_list.append(aftMoPlus)
+            aftMo_sqrt.append(math.sqrt(aftMoPlus_list[i])) #sqrt : 제곱근
+            Ja_list.append(Ja_val)
+            usab.append(Ja_list[i] / (befMo_sqrt[i] * aftMo_sqrt[i]))
+            usab_ave += usab[i]
+
+        print(usab)
+        usab_ave = usab_ave / len(origin)
+        print(str(usab_ave)+"%")
+
+        self.ui.tabWidget.setCurrentIndex(1)
+        self.ui.usab_txt.setText("Usability : " + str(usab_ave)+"%")
+
         #tab2의 before table setItem
         BeforeDataModel = PandasModel(self.originData)
         self.ui.INPUTDATAtable.setModel(BeforeDataModel)
@@ -294,7 +350,7 @@ class MainWidget(QMainWindow):
                 self.ui.OUTPUTDATAtable.setItem(j,i,QTableWidgetItem(str(Final_Output[Final_Output.columns[i]][j])))"""
         
         self.setGraph()
-        self.ui.tabWidget.setCurrentIndex(1) #탭 전환
+        #self.ui.tabWidget.setCurrentIndex(2) #탭 전환
 
 
     def InitializingGraphUI(self):
