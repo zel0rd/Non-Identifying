@@ -28,9 +28,16 @@ from datetime import datetime
 plt.rc('font', family='Malgun Gothic') #한글 깨짐 방지
 plt.rc('axes', unicode_minus=False) #한글 깨짐 방지
 
+abs_path = '/'.join(os.getcwd().split("/")[:-1])
 #to import UI path
-sys.path.append("./UI") # insert your path
-sys.path.append("./PY_CODE")
+sys.path.append(abs_path+"/UI") # insert your path
+sys.path.append(abs_path+"/PY_CODE")
+# import mplwidget
+print("sys path :", sys.path)
+
+# # mplwidget_path = '/'.join(os.getcwd().split("/")[:-1]) + "/UI"
+# sys.path.append(mplwidget_path)
+
 import mplwidget
 from PandasModel import PandasModel # for table model setting
 
@@ -98,7 +105,8 @@ class MainWidget(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
+        self.ui = uic.loadUi(abs_path + "/UI/NonIdentifierUI.ui") #insert your UI path
+        # self.ui = uic.loadUi("./UI/NonIdentifierUI.ui") #insert your UI path
         self.ui.statusbar.showMessage("Start program") #statusbar text
         self.ui.show()        
 
@@ -478,7 +486,8 @@ class NonIdentifierMethod(QMainWindow):
         self.InitUI()
 
     def InitUI(self):
-        self.ui = uic.loadUi("./UI/SelectNonIdentifierMethod.ui") #insert your UI path
+        self.ui = uic.loadUi(abs_path + "/UI/SelectNonIdentifierMethod.ui") 
+        # self.ui = uic.loadUi("./UI/SelectNonIdentifierMethod.ui") #insert your UI path
         self.ui.show()
 
         self.before = mainwindow.originData[mainwindow.originData.columns[self.SelectColumn]].to_frame() #pull one column and convert list
@@ -496,7 +505,8 @@ class NonIdentifierMethod(QMainWindow):
     def NextButton(self):
 
         if(self.ui.Method1.isChecked()): #Swap UI 보여주기 및 데이터 rendering
-            self.ui = uic.loadUi("./UI/Swap.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/Swap.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/Swap.ui") #insert your UI path
             self.ui.show()
             self.ui.ImportButton.hide()
 
@@ -524,7 +534,8 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
 
         elif(self.ui.Method2.isChecked()): # Shuffle UI 보여주기 및 데이터 rendering
-            self.ui = uic.loadUi("./UI/Shuffle.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/Shuffle.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/Shuffle.ui") #insert your UI path
             self.ui.show()
 
             self.ui.BeforeData.setRowCount(self.rownum) #Set Column Count s    
@@ -540,7 +551,8 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
         
         elif(self.ui.Method3.isChecked()):
-            self.ui = uic.loadUi("./UI/CategoricalData.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/CategoricalData.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/CategoricalData.ui") #insert your UI path
             self.ui.show()
 
             self.ui.nextButton.clicked.connect(self.Categorical_next)
@@ -548,7 +560,8 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
         
         elif(self.ui.Method4.isChecked()): # 마스킹 및 삭제
-            self.ui = uic.loadUi("./UI/maskingData.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/maskingData.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/maskingData.ui") #insert your UI path
             self.ui.show()
 
             self.m_level = self.ui.maskingText.textChanged.connect(self.usedbyMasking)
@@ -563,7 +576,8 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
         
         elif(self.ui.Method5.isChecked()): # 통계값 처리 UI 및 박스 그래프 보여주기
-            self.ui = uic.loadUi("./UI/Aggregation.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/Aggregation.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/Aggregation.ui") #insert your UI path
             self.ui.show()
             self.RemoveFlag = False
 
@@ -596,7 +610,8 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.backButton.clicked.connect(self.InitUI)
         
         elif(self.ui.Method6.isChecked()): # 라운딩 UI 및 before data 테이블 값 넣기
-            self.ui = uic.loadUi("./UI/Rounding.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/Rounding.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/Rounding.ui") #insert your UI path
             self.ui.show()
             self.ui.randomLabel.hide()
             
@@ -665,7 +680,8 @@ class NonIdentifierMethod(QMainWindow):
     def Categorical_next(self):
 
         if(self.ui.ordering.isChecked()):
-            self.ui = uic.loadUi("./UI/ordering_categorical.ui")
+            self.ui = uic.loadUi(abs_path + "/UI/ordering_categorical.ui")
+            # self.ui = uic.loadUi("./UI/ordering_categorical.ui")
             self.ui.show()
         
             self.original_uniq = self.before[self.SelectColumnName].unique()
@@ -688,7 +704,8 @@ class NonIdentifierMethod(QMainWindow):
             self.ui.cancelButton.clicked.connect(self.ui.hide)
 
         elif(self.ui.intervals.isChecked()):
-            self.ui = uic.loadUi("./UI/intervals_categorical.ui") #insert your UI path
+            self.ui = uic.loadUi(abs_path + "/UI/intervals_categorical.ui") #insert your UI path
+            # self.ui = uic.loadUi("./UI/intervals_categorical.ui") #insert your UI path
             self.ui.show()
 
             self.ui.original.setRowCount(self.rownum) #Set Column Count s 
@@ -788,7 +805,8 @@ class NonIdentifierMethod(QMainWindow):
                         self.ui.categorical.setItem(j,0,QTableWidgetItem(str(self.after[self.after.columns[0]][j])))
              
     def Masking(self):
-        self.ui = uic.loadUi("./UI/maskingData_review.ui") #insert your UI path
+        self.ui = uic.loadUi(abs_path + "/UI/maskingData_review.ui") #insert your UI path
+        # self.ui = uic.loadUi("./UI/maskingData_review.ui") #insert your UI path
         self.ui.show()
         self.ui.maskingLevel.setRowCount(self.rownum) #Set Column Count s    
         
